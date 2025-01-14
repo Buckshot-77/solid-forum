@@ -15,6 +15,35 @@ export class Answer extends Entity<AnswerProps> {
     return this._props.content
   }
 
+  get authorId() {
+    return this._props.authorId
+  }
+
+  get questionId() {
+    return this._props.questionId
+  }
+
+  get createdAt() {
+    return this._props.createdAt
+  }
+
+  get updatedAt() {
+    return this._props.updatedAt
+  }
+
+  get preview() {
+    return this.content.slice(0, 120).trimEnd()
+  }
+
+  private touch() {
+    this._props.updatedAt = new Date()
+  }
+
+  set content(content: string) {
+    this._props.content = content
+    this.touch()
+  }
+
   static create(
     props: Optional<AnswerProps, 'createdAt'>,
     id?: UniqueIdentifier,
