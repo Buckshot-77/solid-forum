@@ -1,3 +1,4 @@
+import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Answer } from '@/domain/entities/answer'
 import { AnswerRepository } from '@/domain/repositories/answer-repository'
 
@@ -14,7 +15,13 @@ export class AnswerQuestionUseCase {
     authorId,
     questionId,
   }: AnswerQuestionUseCaseRequest): Promise<Answer> {
-    const answer = new Answer({ content, authorId, questionId })
+    const answer = Answer.create({
+      content,
+      authorId: new UniqueIdentifier(authorId),
+      questionId: new UniqueIdentifier(questionId),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
 
     await this.answerRepository.create(answer)
 
