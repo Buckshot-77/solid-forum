@@ -1,7 +1,7 @@
 import { expect, describe, it, beforeEach } from 'vitest'
-import { AnswerQuestionUseCase } from '@/domain/use-cases/answer-question'
-import { Answer } from '@/domain/entities/answer'
-import { AnswerRepository } from '../repositories/answer-repository'
+import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question'
+import { Answer } from '@/domain/forum/enterprise/entities/answer'
+import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
 
 const fakeAnswerRepository: AnswerRepository = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

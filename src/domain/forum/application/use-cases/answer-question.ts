@@ -1,6 +1,6 @@
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
-import { Answer } from '@/domain/entities/answer'
-import { AnswerRepository } from '@/domain/repositories/answer-repository'
+import { Answer } from '@/domain/forum/enterprise/entities/answer'
+import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
 
 interface AnswerQuestionUseCaseRequest {
   authorId: string

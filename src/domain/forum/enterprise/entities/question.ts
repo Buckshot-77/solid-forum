@@ -1,4 +1,4 @@
-import { Slug } from '@/domain/entities/value-objects/slug'
+import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
 import { Entity } from '@/core/entities/entity'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Optional } from '@/core/types/optional'
