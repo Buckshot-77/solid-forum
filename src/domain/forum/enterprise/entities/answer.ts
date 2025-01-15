@@ -11,31 +11,31 @@ interface AnswerProps {
 }
 
 export class Answer extends Entity<AnswerProps> {
-  get content() {
+  get content(): string {
     return this._props.content
   }
 
-  get authorId() {
-    return this._props.authorId
+  get authorId(): string {
+    return this._props.authorId.toString()
   }
 
-  get questionId() {
-    return this._props.questionId
+  get questionId(): string {
+    return this._props.questionId.toString()
   }
 
-  get createdAt() {
+  get createdAt(): Date {
     return this._props.createdAt
   }
 
-  get updatedAt() {
+  get updatedAt(): Date | undefined {
     return this._props.updatedAt
   }
 
-  get preview() {
+  get preview(): string {
     return this.content.slice(0, 120).trimEnd()
   }
 
-  private touch() {
+  private touch(): void {
     this._props.updatedAt = new Date()
   }
 

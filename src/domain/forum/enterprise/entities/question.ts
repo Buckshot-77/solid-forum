@@ -14,42 +14,42 @@ interface QuestionProps {
 }
 
 export class Question extends Entity<QuestionProps> {
-  get title() {
+  get title(): string {
     return this._props.title
   }
 
-  get slug() {
-    return this._props.slug
+  get slug(): string {
+    return this._props.slug.value
   }
 
-  get content() {
+  get content(): string {
     return this._props.content
   }
 
-  get authorId() {
-    return this._props.authorId
+  get authorId(): string {
+    return this._props.authorId.toString()
   }
 
-  get bestAnswerId() {
-    return this._props.bestAnswerId
+  get bestAnswerId(): string | undefined {
+    return this._props.bestAnswerId?.toString()
   }
 
-  get createdAt() {
+  get createdAt(): Date {
     return this._props.createdAt
   }
 
-  get updatedAt() {
+  get updatedAt(): Date | undefined {
     return this._props.updatedAt
   }
 
-  get isNew() {
+  get isNew(): boolean {
     const THREE_DAYS_AGO = new Date().getMilliseconds() - 1000 * 3600 * 24 * 3
 
     if (this.createdAt.getMilliseconds() < THREE_DAYS_AGO) return true
     return false
   }
 
-  get preview() {
+  get preview(): string {
     return this.content.slice(0, 120).trimEnd()
   }
 

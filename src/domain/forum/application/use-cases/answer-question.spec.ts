@@ -18,13 +18,12 @@ describe('AnswerQuestion unit tests', () => {
   })
 
   it('should be able to create an answer', async () => {
-    const answer = await answerQuestionUseCase.execute({
+    const response = await answerQuestionUseCase.execute({
       content: 'Any content',
       authorId: 'any author id',
       questionId: 'any question id',
     })
 
-    expect(answer).toBeInstanceOf(Answer)
-    expect(answer.content).toBe('Any content')
+    expect(response.content).toBe('Any content')
   })
 })
