@@ -26,11 +26,24 @@ describe('DeleteQuestion unit tests', () => {
 
     await deleteQuestionUseCase.execute({
       questionId: createdQuestion.id,
+      authorId: createdQuestion.authorId,
     })
 
     const foundQuestionAfterDeletion =
       await inMemoryQuestionRepository.findById(createdQuestion.id)
 
     expect(foundQuestionAfterDeletion).not.toBeTruthy()
+  })
+
+  it('should not allow a user that is not the author to delete a question', async () => {
+    const createdQuestion = makeQuestion()
+    await inMemoryQuestionRepository.create(createdQuestion)
+
+    await expect(
+      deleteQuestionUseCase.execute({
+        authorId: 'any-author-id-that-is-not-the-creator',
+        questionId: createdQuestion.id,
+      }),
+    ).rejects.toThrowError('User not allowed to delete this question')
   })
 })
