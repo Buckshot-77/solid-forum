@@ -22,8 +22,7 @@ describe('GetQuestionBySlug unit tests', () => {
     const createdQuestion = makeQuestion({
       slug: Slug.createWithoutTreatments('any-slug-text'),
     })
-    const secondQuestion = makeQuestion()
-    console.log(secondQuestion)
+
     await inMemoryQuestionRepository.create(createdQuestion)
 
     const { question } = await getQuestionBySlugUseCase.execute({

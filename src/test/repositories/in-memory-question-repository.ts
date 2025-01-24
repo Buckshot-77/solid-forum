@@ -15,4 +15,14 @@ export class InMemoryQuestionRepository implements QuestionRepository {
   public async create(question: Question): Promise<void> {
     this.questions.push(question)
   }
+
+  public async deleteById(id: string): Promise<void> {
+    this.questions = this.questions.filter((question) => question.id !== id)
+  }
+
+  public async findById(id: string): Promise<Question | undefined> {
+    const foundQuestion = this.questions.find((question) => question.id === id)
+
+    return foundQuestion
+  }
 }
