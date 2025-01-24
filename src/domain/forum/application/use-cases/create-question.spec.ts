@@ -1,20 +1,16 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question'
-import { Question } from '@/domain/forum/enterprise/entities/question'
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
 
-const fakeQuestionRepository: QuestionRepository = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  create: async (_question: Question) => {
-    return
-  },
-}
-
-describe('QuestionQuestion unit tests', () => {
+describe('CreateQuestion unit tests', () => {
   let createQuestionUseCase: CreateQuestionUseCase
+  let inMemoryQuestionRepository: InMemoryQuestionRepository
 
   beforeEach(() => {
-    createQuestionUseCase = new CreateQuestionUseCase(fakeQuestionRepository)
+    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    createQuestionUseCase = new CreateQuestionUseCase(
+      inMemoryQuestionRepository,
+    )
   })
 
   it('should be able to create an question', async () => {

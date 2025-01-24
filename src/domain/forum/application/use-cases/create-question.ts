@@ -17,7 +17,7 @@ interface CreateQuestionUseCaseResponse {
 }
 
 export class CreateQuestionUseCase {
-  constructor(private questionRepository: QuestionRepository) {}
+  constructor(private readonly questionRepository: QuestionRepository) {}
   async execute({
     title,
     content,
