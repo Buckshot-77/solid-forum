@@ -1,13 +1,10 @@
-import { expect, describe, it, beforeEach } from 'vitest'
+import { expect, describe, it, beforeEach, vi } from 'vitest'
 
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug'
-
-import { Question } from '@/domain/forum/enterprise/entities/question'
 import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
 
-import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
-
 import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
+import { makeQuestion } from '@/test/factories/make-question'
 
 describe('GetQuestionBySlug unit tests', () => {
   let getQuestionBySlugUseCase: GetQuestionBySlugUseCase
@@ -20,20 +17,20 @@ describe('GetQuestionBySlug unit tests', () => {
     )
   })
 
-  it('should be able to get question by slug', async () => {
-    await inMemoryQuestionRepository.create(
-      Question.create({
-        authorId: new UniqueIdentifier(),
-        content: 'any-content',
-        title: 'any-title',
-        slug: Slug.createWithoutTreatments('any-slug-text'),
-      }),
-    )
+  it('should be able to get question by slug and call find by slug with the given slug', async () => {
+    const getBySlugSpy = vi.spyOn(inMemoryQuestionRepository, 'findBySlug')
+    const createdQuestion = makeQuestion({
+      slug: Slug.createWithoutTreatments('any-slug-text'),
+    })
+    const secondQuestion = makeQuestion()
+    console.log(secondQuestion)
+    await inMemoryQuestionRepository.create(createdQuestion)
 
     const { question } = await getQuestionBySlugUseCase.execute({
       slug_text: 'any-slug-text',
     })
 
+    expect(getBySlugSpy).toHaveBeenCalledWith('any-slug-text')
     expect(question.slug).toBe('any-slug-text')
   })
 })
