@@ -13,7 +13,7 @@ describe('CreateQuestion unit tests', () => {
     )
   })
 
-  it('should be able to create an question', async () => {
+  it('should be able to create a question', async () => {
     const response = await createQuestionUseCase.execute({
       authorId: 'any author id',
       content: 'any content',

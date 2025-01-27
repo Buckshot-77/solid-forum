@@ -12,7 +12,7 @@ describe('DeleteAnswer unit tests', () => {
     deleteAnswerUseCase = new DeleteAnswerUseCase(inMemoryAnswerRepository)
   })
 
-  it('should be able to delete a answer', async () => {
+  it('should be able to delete an answer', async () => {
     const createdAnswer = makeAnswer()
     await inMemoryAnswerRepository.create(createdAnswer)
 
@@ -34,7 +34,7 @@ describe('DeleteAnswer unit tests', () => {
     expect(foundAnswerAfterDeletion).not.toBeTruthy()
   })
 
-  it('should not allow a user that is not the author to delete a answer', async () => {
+  it('should not allow a user that is not the author to delete an answer', async () => {
     const createdAnswer = makeAnswer()
     await inMemoryAnswerRepository.create(createdAnswer)
 
