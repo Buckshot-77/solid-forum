@@ -1,4 +1,7 @@
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import {
+  QuestionRepository,
+  EditQuestionRepositoryRequest,
+} from '@/domain/forum/application/repositories/question-repository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
 export class InMemoryQuestionRepository implements QuestionRepository {
@@ -32,5 +35,24 @@ export class InMemoryQuestionRepository implements QuestionRepository {
     const foundQuestion = this.questions.find((question) => question.id === id)
 
     return foundQuestion
+  }
+
+  public async edit({
+    newContent,
+    question,
+  }: EditQuestionRepositoryRequest): Promise<Question> {
+    const foundQuestionIndex = this.questions.findIndex(
+      (iteratedQuestion) => iteratedQuestion.id === question.id,
+    )
+
+    this.questions.splice(foundQuestionIndex, 1)
+
+    question.content = newContent
+
+    console.log(question)
+
+    this.questions.push(question)
+
+    return question
   }
 }

@@ -9,9 +9,9 @@ interface AnswerQuestionUseCaseRequest {
 }
 
 interface AnswerQuestionUseCaseResponse {
-  answer_id: string
-  question_id: string
-  author_id: string
+  answerId: string
+  questionId: string
+  authorId: string
   content: string
 }
 
@@ -33,9 +33,9 @@ export class AnswerQuestionUseCase {
     await this.answerRepository.create(answer)
 
     return {
-      answer_id: answer.id,
-      question_id: answer.questionId.toString(),
-      author_id: answer.authorId.toString(),
+      answerId: answer.id,
+      questionId: answer.questionId.toString(),
+      authorId: answer.authorId.toString(),
       content: answer.content,
     }
   }
