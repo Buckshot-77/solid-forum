@@ -25,11 +25,10 @@ export class EditQuestionUseCase {
     if (foundQuestion.authorId !== authorId)
       throw new Error('Question is not from this author')
 
-    const editedQuestion = await this.questionRepository.edit({
-      newContent,
-      question: foundQuestion,
-    })
+    foundQuestion.content = newContent
 
-    return { question: editedQuestion }
+    await this.questionRepository.save(foundQuestion)
+
+    return { question: foundQuestion }
   }
 }
