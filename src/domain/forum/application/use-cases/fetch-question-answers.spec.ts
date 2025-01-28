@@ -73,6 +73,32 @@ describe('FetchQuestionAnswers unit tests', () => {
     expect(foundAnswers.length).toBe(10)
   })
 
+  it('should order results by createdAt date', async () => {
+    const firstAnswer = makeAnswer({
+      createdAt: new Date('2020-01-01'),
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+    const secondAnswer = makeAnswer({
+      createdAt: new Date('2021-01-01'),
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+    const thirdAnswer = makeAnswer({
+      createdAt: new Date('2022-01-01'),
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+    console.log(thirdAnswer.createdAt)
+    await inMemoryAnswerRepository.create(firstAnswer)
+    await inMemoryAnswerRepository.create(secondAnswer)
+    await inMemoryAnswerRepository.create(thirdAnswer)
+
+    const { answers } = await fetchQuestionAnswersUseCase.execute({
+      page: 1,
+      questionId: 'any-question-id',
+    })
+
+    expect(answers).toEqual([thirdAnswer, secondAnswer, firstAnswer])
+  })
+
   it('should return 20 results for 50 answers created and page 2 requested, for page size 30', async () => {
     for (let i = 0; i < 50; i++) {
       const createdAnswer = makeAnswer({

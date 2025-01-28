@@ -22,6 +22,8 @@ export function makeQuestion(override?: Partial<QuestionProps>) {
     slug: Slug.createWithoutTreatments(
       `${randAnimalType().toLowerCase()}-${randVehicleFuel().toLowerCase()}-${randAirportCode().toLowerCase()}`,
     ),
+    createdAt: new Date(),
+    updatedAt: new Date(),
     ...override,
   })
 

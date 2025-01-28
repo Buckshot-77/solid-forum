@@ -1,4 +1,4 @@
-import { randRecentDate, randTextRange } from '@ngneat/falso'
+import { randTextRange } from '@ngneat/falso'
 
 import { Answer, AnswerProps } from '@/domain/forum/enterprise/entities/answer'
 
@@ -9,7 +9,7 @@ export function makeAnswer(override?: Partial<AnswerProps>) {
     authorId: new UniqueIdentifier(),
     content: randTextRange({ min: 300, max: 400 }),
     questionId: new UniqueIdentifier(),
-    createdAt: randRecentDate(),
+    createdAt: new Date(),
     updatedAt: new Date(),
     ...override,
   })

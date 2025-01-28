@@ -50,8 +50,8 @@ export class Answer extends Entity<AnswerProps> {
   ): Answer {
     const answer = new Answer(
       {
-        ...props,
         createdAt: new Date(),
+        ...props,
       },
       id,
     )

@@ -25,6 +25,28 @@ describe('FetchRecentQuestions unit tests', () => {
     ).rejects.toThrowError('Page size not allowed! Max page size is 30')
   })
 
+  it('should order results by createdAt date', async () => {
+    const firstQuestion = makeQuestion({
+      createdAt: new Date('2020-01-01'),
+    })
+    const secondQuestion = makeQuestion({
+      createdAt: new Date('2021-01-01'),
+    })
+    const thirdQuestion = makeQuestion({
+      createdAt: new Date('2022-01-01'),
+    })
+
+    await inMemoryQuestionRepository.create(firstQuestion)
+    await inMemoryQuestionRepository.create(secondQuestion)
+    await inMemoryQuestionRepository.create(thirdQuestion)
+
+    const { questions } = await fetchRecentQuestionsUseCase.execute({
+      page: 1,
+    })
+
+    expect(questions).toEqual([thirdQuestion, secondQuestion, firstQuestion])
+  })
+
   it('should return the first 30 results if no pageSize is given', async () => {
     for (let i = 0; i < 50; i++) {
       const createdQuestion = makeQuestion()
