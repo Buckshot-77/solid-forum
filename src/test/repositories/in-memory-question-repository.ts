@@ -14,12 +14,12 @@ export class InMemoryQuestionRepository implements QuestionRepository {
   }
 
   public async findManyRecent({
-    page_size,
+    pageSize,
     page,
   }: PaginationParams): Promise<Question[]> {
     const questions = this.questions
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * page_size, page * page_size)
+      .slice((page - 1) * pageSize, page * pageSize)
 
     return questions
   }

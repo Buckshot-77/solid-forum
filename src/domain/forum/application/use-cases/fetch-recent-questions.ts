@@ -3,7 +3,7 @@ import { Question } from '@/domain/forum/enterprise/entities/question'
 
 interface FetchRecentQuestionsUseCaseRequest {
   page: number
-  page_size?: number
+  pageSize?: number
 }
 
 interface FetchRecentQuestionsUseCaseResponse {
@@ -12,19 +12,19 @@ interface FetchRecentQuestionsUseCaseResponse {
 
 export class FetchRecentQuestionsUseCase {
   constructor(private readonly questionRepository: QuestionRepository) {}
-  private readonly MAX_PAGE_SIZE = 30
+  private readonly MAX_pageSize = 30
 
   public async execute({
     page,
-    page_size,
+    pageSize,
   }: FetchRecentQuestionsUseCaseRequest): Promise<FetchRecentQuestionsUseCaseResponse> {
-    if (page_size && page_size > this.MAX_PAGE_SIZE)
+    if (pageSize && pageSize > this.MAX_pageSize)
       throw new Error(
-        `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
+        `Page size not allowed! Max page size is ${this.MAX_pageSize}`,
       )
     const foundQuestions = await this.questionRepository.findManyRecent({
       page,
-      page_size: page_size ?? this.MAX_PAGE_SIZE,
+      pageSize: pageSize ?? this.MAX_pageSize,
     })
 
     return { questions: foundQuestions }

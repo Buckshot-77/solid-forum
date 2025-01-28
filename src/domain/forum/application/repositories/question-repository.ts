@@ -4,7 +4,7 @@ export interface QuestionRepository {
   create(question: Question): Promise<void>
   save(question: Question): Promise<void>
   deleteById(id: string): Promise<void>
-  findManyRecent({ page, page_size }: PaginationParams): Promise<Question[]>
+  findManyRecent({ page, pageSize }: PaginationParams): Promise<Question[]>
   findById(id: string): Promise<Question | undefined>
   findBySlug(slug_text: string): Promise<Question | undefined>
 }

@@ -16,16 +16,16 @@ describe('FetchRecentQuestions unit tests', () => {
     )
   })
 
-  it('should throw an error if page_size exceeds max page size allowed', async () => {
+  it('should throw an error if pageSize exceeds max page size allowed', async () => {
     const createdQuestion = makeQuestion()
     await inMemoryQuestionRepository.create(createdQuestion)
 
     await expect(
-      fetchRecentQuestionsUseCase.execute({ page: 1, page_size: 31 }),
+      fetchRecentQuestionsUseCase.execute({ page: 1, pageSize: 31 }),
     ).rejects.toThrowError('Page size not allowed! Max page size is 30')
   })
 
-  it('should return the first 30 results if no page_size is given', async () => {
+  it('should return the first 30 results if no pageSize is given', async () => {
     for (let i = 0; i < 50; i++) {
       const createdQuestion = makeQuestion()
       await inMemoryQuestionRepository.create(createdQuestion)
