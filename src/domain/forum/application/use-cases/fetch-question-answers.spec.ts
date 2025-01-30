@@ -86,7 +86,7 @@ describe('FetchQuestionAnswers unit tests', () => {
       createdAt: new Date('2022-01-01'),
       questionId: new UniqueIdentifier('any-question-id'),
     })
-    console.log(thirdAnswer.createdAt)
+
     await inMemoryAnswerRepository.create(firstAnswer)
     await inMemoryAnswerRepository.create(secondAnswer)
     await inMemoryAnswerRepository.create(thirdAnswer)
