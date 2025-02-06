@@ -1,5 +1,8 @@
 import { expect, describe, it, beforeEach } from 'vitest'
+
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer'
+import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
+
 import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
 import { makeAnswer } from '@/test/factories/make-answer'
 
@@ -23,8 +26,8 @@ describe('DeleteAnswer unit tests', () => {
     expect(foundAnswer).toEqual(createdAnswer)
 
     await deleteAnswerUseCase.execute({
-      answerId: createdAnswer.id,
-      authorId: createdAnswer.authorId,
+      answerId: new UniqueIdentifier(createdAnswer.id),
+      authorId: new UniqueIdentifier(createdAnswer.authorId),
     })
 
     const foundAnswerAfterDeletion = await inMemoryAnswerRepository.findById(
@@ -40,8 +43,8 @@ describe('DeleteAnswer unit tests', () => {
 
     await expect(
       deleteAnswerUseCase.execute({
-        authorId: 'any-author-id-that-is-not-the-creator',
-        answerId: createdAnswer.id,
+        authorId: new UniqueIdentifier('any-author-id-that-is-not-the-creator'),
+        answerId: new UniqueIdentifier(createdAnswer.id),
       }),
     ).rejects.toThrowError('User not allowed to delete this answer')
   })

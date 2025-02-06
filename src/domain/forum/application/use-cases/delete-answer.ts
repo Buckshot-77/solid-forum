@@ -1,8 +1,9 @@
+import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
 
 interface DeleteAnswerUseCaseRequest {
-  answerId: string
-  authorId: string
+  answerId: UniqueIdentifier
+  authorId: UniqueIdentifier
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -14,14 +15,16 @@ export class DeleteAnswerUseCase {
     answerId,
     authorId,
   }: DeleteAnswerUseCaseRequest): Promise<DeleteAnswerUseCaseResponse> {
-    const foundAnswer = await this.answerRepository.findById(answerId)
+    const foundAnswer = await this.answerRepository.findById(
+      answerId.toString(),
+    )
 
     if (!foundAnswer) throw new Error('No answer was found with the given ID')
 
-    if (foundAnswer.authorId !== authorId)
+    if (foundAnswer.authorId !== authorId.toString())
       throw new Error('User not allowed to delete this answer')
 
-    await this.answerRepository.deleteById(answerId)
+    await this.answerRepository.deleteById(answerId.toString())
 
     return {}
   }

@@ -13,7 +13,20 @@ export class InMemoryQuestionCommentRepository
 
     return foundQuestionComment
   }
+
   public async create(questionComment: QuestionComment): Promise<void> {
     this.questionComments.push(questionComment)
+  }
+
+  public async deleteById(id: string): Promise<void> {
+    const foundIndex = this.questionComments.findIndex(
+      (questionComment) => questionComment.id === id,
+    )
+
+    if (foundIndex === -1) {
+      return
+    }
+
+    this.questionComments.splice(foundIndex, 1)
   }
 }
