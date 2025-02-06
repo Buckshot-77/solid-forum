@@ -17,7 +17,7 @@ describe('DeleteQuestionComment unit tests', () => {
     )
   })
 
-  it('should be able to delete an question', async () => {
+  it('should be able to delete a question', async () => {
     const createdQuestionComment = makeQuestionComment()
     await inMemoryQuestionCommentRepository.create(createdQuestionComment)
 
