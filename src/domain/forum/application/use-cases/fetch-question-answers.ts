@@ -13,20 +13,20 @@ interface FetchQuestionAnswersUseCaseResponse {
 
 export class FetchQuestionAnswersUseCase {
   constructor(private readonly answerRepository: AnswerRepository) {}
-  private readonly MAX_pageSize = 30
+  private readonly MAX_PAGE_SIZE = 30
 
   public async execute({
     page,
     pageSize,
     questionId,
   }: FetchQuestionAnswersUseCaseRequest): Promise<FetchQuestionAnswersUseCaseResponse> {
-    if (pageSize && pageSize > this.MAX_pageSize)
+    if (pageSize && pageSize > this.MAX_PAGE_SIZE)
       throw new Error(
-        `Page size not allowed! Max page size is ${this.MAX_pageSize}`,
+        `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
       )
     const foundAnswers = await this.answerRepository.findManyByQuestionId(
       questionId,
-      { page, pageSize: pageSize ?? this.MAX_pageSize },
+      { page, pageSize: pageSize ?? this.MAX_PAGE_SIZE },
     )
 
     return { answers: foundAnswers }
