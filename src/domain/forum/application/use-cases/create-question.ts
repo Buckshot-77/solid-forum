@@ -1,3 +1,5 @@
+import { Either, right } from '@/core/either'
+
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
@@ -8,13 +10,16 @@ interface CreateQuestionUseCaseRequest {
   content: string
 }
 
-interface CreateQuestionUseCaseResponse {
-  authorId: string
-  questionId: string
-  content: string
-  title: string
-  slug: string
-}
+type CreateQuestionUseCaseResponse = Either<
+  null,
+  {
+    authorId: string
+    questionId: string
+    content: string
+    title: string
+    slug: string
+  }
+>
 
 export class CreateQuestionUseCase {
   constructor(private readonly questionRepository: QuestionRepository) {}
@@ -33,12 +38,12 @@ export class CreateQuestionUseCase {
 
     await this.questionRepository.create(question)
 
-    return {
+    return right({
       authorId: question.authorId,
       questionId: question.id,
       content: question.content,
       slug: question.slug,
       title: question.title,
-    }
+    })
   }
 }
