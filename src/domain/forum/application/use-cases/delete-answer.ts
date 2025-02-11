@@ -1,13 +1,20 @@
+import { Either, left, right } from '@/core/either'
+
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
+
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 interface DeleteAnswerUseCaseRequest {
   answerId: UniqueIdentifier
   authorId: UniqueIdentifier
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface DeleteAnswerUseCaseResponse {}
+type DeleteAnswerUseCaseResponse = Either<
+  ResourceNotFoundError | NotAllowedError,
+  {}
+>
 
 export class DeleteAnswerUseCase {
   constructor(private readonly answerRepository: AnswerRepository) {}
@@ -19,13 +26,16 @@ export class DeleteAnswerUseCase {
       answerId.toString(),
     )
 
-    if (!foundAnswer) throw new Error('No answer was found with the given ID')
+    if (!foundAnswer)
+      return left(
+        new ResourceNotFoundError('No answer was found with the given ID'),
+      )
 
     if (foundAnswer.authorId !== authorId.toString())
-      throw new Error('User not allowed to delete this answer')
+      return left(new NotAllowedError('User not allowed to delete this answer'))
 
     await this.answerRepository.deleteById(answerId.toString())
 
-    return {}
+    return right({})
   }
 }

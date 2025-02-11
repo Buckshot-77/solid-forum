@@ -1,13 +1,19 @@
+import { Either, left, right } from '@/core/either'
+
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { QuestionCommentRepository } from '@/domain/forum/application/repositories/question-comment-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 interface DeleteQuestionCommentUseCaseRequest {
   questionCommentId: UniqueIdentifier
   authorId: UniqueIdentifier
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface DeleteQuestionCommentUseCaseResponse {}
+type DeleteQuestionCommentUseCaseResponse = Either<
+  ResourceNotFoundError | NotAllowedError,
+  {}
+>
 
 export class DeleteQuestionCommentUseCase {
   constructor(
@@ -22,15 +28,19 @@ export class DeleteQuestionCommentUseCase {
     )
 
     if (!foundQuestionComment)
-      throw new Error('No question was found with the given ID')
+      return left(
+        new ResourceNotFoundError('No question was found with the given ID'),
+      )
 
     if (foundQuestionComment.authorId !== authorId.toString())
-      throw new Error('User not allowed to delete this comment')
+      return left(
+        new NotAllowedError('User not allowed to delete this comment'),
+      )
 
     await this.questionCommentRepository.deleteById(
       questionCommentId.toString(),
     )
 
-    return {}
+    return right({})
   }
 }

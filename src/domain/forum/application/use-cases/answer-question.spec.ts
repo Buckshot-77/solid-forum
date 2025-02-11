@@ -18,6 +18,9 @@ describe('AnswerQuestion unit tests', () => {
       questionId: 'any question id',
     })
 
-    expect(response.content).toBe('Any content')
+    expect(response.isRight()).toBe(true)
+    expect(response.value?.answer.content).toEqual('Any content')
+    expect(response.value?.answer.authorId).toEqual('any author id')
+    expect(response.value?.answer.questionId).toEqual('any question id')
   })
 })

@@ -10,15 +10,7 @@ interface AnswerQuestionUseCaseRequest {
   content: string
 }
 
-type AnswerQuestionUseCaseResponse = Either<
-  null,
-  {
-    answerId: string
-    questionId: string
-    authorId: string
-    content: string
-  }
->
+type AnswerQuestionUseCaseResponse = Either<null, { answer: Answer }>
 
 export class AnswerQuestionUseCase {
   constructor(private readonly answerRepository: AnswerRepository) {}
@@ -29,19 +21,14 @@ export class AnswerQuestionUseCase {
   }: AnswerQuestionUseCaseRequest): Promise<AnswerQuestionUseCaseResponse> {
     const answer = Answer.create({
       content,
-      authorId: new UniqueIdentifier(questionId),
-      questionId: new UniqueIdentifier(authorId),
+      authorId: new UniqueIdentifier(authorId),
+      questionId: new UniqueIdentifier(questionId),
       createdAt: new Date(),
       updatedAt: new Date(),
     })
 
     await this.answerRepository.create(answer)
 
-    return right({
-      answerId: answer.id,
-      questionId: answer.questionId.toString(),
-      authorId: answer.authorId.toString(),
-      content: answer.content,
-    })
+    return right({ answer })
   }
 }

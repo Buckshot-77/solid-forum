@@ -7,6 +7,9 @@ import { makeQuestion } from '@/test/factories/make-question'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { NotAllowedError } from './errors/not-allowed-error'
+
 let answerRepository: InMemoryAnswerRepository
 let questionRepository: InMemoryQuestionRepository
 
@@ -22,29 +25,34 @@ describe('Choose Best Answer unit tests', () => {
     )
   })
 
-  it('should throw if no answer is found', async () => {
-    await expect(
-      chooseBestAnswerUseCase.execute({
-        answerId: 'any-answer-id',
-        questionAuthorId: 'any-question-author-id',
-      }),
-    ).rejects.toThrowError('Answer was not found')
+  it('should return ResourceNotFoundError if no answer is found', async () => {
+    const response = await chooseBestAnswerUseCase.execute({
+      answerId: 'any-answer-id',
+      questionAuthorId: 'any-question-author-id',
+    })
+
+    expect(response.isLeft()).toBe(true)
+    expect(response.value).toEqual(
+      new ResourceNotFoundError('Answer was not found'),
+    )
   })
 
-  it('should throw if answer is found but, bizarrely, using the given questionId does not find a question', async () => {
+  it('should return ResourceNotFoundError if answer is found but, bizarrely, using the given questionId does not find a question', async () => {
     const createdAnswer = makeAnswer()
 
     await answerRepository.create(createdAnswer)
 
-    await expect(
-      chooseBestAnswerUseCase.execute({
-        answerId: createdAnswer.id,
-        questionAuthorId: 'any-question-author-id',
-      }),
-    ).rejects.toThrowError('Question was not found')
+    const response = await chooseBestAnswerUseCase.execute({
+      answerId: createdAnswer.id,
+      questionAuthorId: 'any-question-author-id',
+    })
+    expect(response.isLeft()).toBe(true)
+    expect(response.value).toEqual(
+      new ResourceNotFoundError('Question was not found'),
+    )
   })
 
-  it('should throw if answer and question are found, but the authorId does not match the given authorId', async () => {
+  it('should return NotAllowedError if answer and question are found, but the authorId does not match the given authorId', async () => {
     const createdQuestion = makeQuestion()
     const createdAnswer = makeAnswer({
       questionId: new UniqueIdentifier(createdQuestion.id),
@@ -53,12 +61,15 @@ describe('Choose Best Answer unit tests', () => {
     await questionRepository.create(createdQuestion)
     await answerRepository.create(createdAnswer)
 
-    await expect(
-      chooseBestAnswerUseCase.execute({
-        answerId: createdAnswer.id,
-        questionAuthorId: 'any-question-author-id',
-      }),
-    ).rejects.toThrowError('Question is not from this author')
+    const response = await chooseBestAnswerUseCase.execute({
+      answerId: createdAnswer.id,
+      questionAuthorId: 'any-question-author-id',
+    })
+
+    expect(response.isLeft()).toBe(true)
+    expect(response.value).toEqual(
+      new NotAllowedError('Question is not from this author'),
+    )
   })
 
   it('should be able to choose best answer if all previous conditions are met', async () => {
@@ -70,12 +81,15 @@ describe('Choose Best Answer unit tests', () => {
     await questionRepository.create(createdQuestion)
     await answerRepository.create(createdAnswer)
 
-    const { bestAnswerId, questionId } = await chooseBestAnswerUseCase.execute({
+    const response = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,
       questionAuthorId: createdQuestion.authorId,
     })
 
-    expect(bestAnswerId).toBe(createdAnswer.id)
-    expect(questionId).toBe(createdQuestion.id)
+    expect(response.isRight()).toBe(true)
+    expect(response.value).toEqual({
+      questionId: createdQuestion.id,
+      bestAnswerId: createdAnswer.id,
+    })
   })
 })

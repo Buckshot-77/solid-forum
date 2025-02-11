@@ -10,6 +10,12 @@ export default [
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  eslintPluginPrettierRecommended,
+  {
+    ...eslintPluginPrettierRecommended,
+    rules: {
+      ...eslintPluginPrettierRecommended.rules,
+      '@typescript-eslint/no-empty-object-type': 'off',
+    },
+  },
   { ignores: ['build/*.{js,mjs,cjs,ts}', 'node_modules/**/*.{js,mjs,cjs,ts}'] },
 ]

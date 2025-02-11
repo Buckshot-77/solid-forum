@@ -1,5 +1,8 @@
+import { Either, left, right } from '@/core/either'
+
 import { AnswerCommentRepository } from '@/domain/forum/application/repositories/answer-comment-repository'
 import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comment'
+import { PaginationError } from './errors/pagination-error'
 
 interface FetchAnswerCommentsUseCaseRequest {
   page: number
@@ -7,9 +10,12 @@ interface FetchAnswerCommentsUseCaseRequest {
   answerId: string
 }
 
-interface FetchAnswerCommentsUseCaseResponse {
-  answerComments: AnswerComment[]
-}
+type FetchAnswerCommentsUseCaseResponse = Either<
+  PaginationError,
+  {
+    answerComments: AnswerComment[]
+  }
+>
 
 export class FetchAnswerCommentsUseCase {
   constructor(
@@ -23,8 +29,10 @@ export class FetchAnswerCommentsUseCase {
     answerId,
   }: FetchAnswerCommentsUseCaseRequest): Promise<FetchAnswerCommentsUseCaseResponse> {
     if (pageSize && pageSize > this.MAX_PAGE_SIZE)
-      throw new Error(
-        `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
+      return left(
+        new PaginationError(
+          `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
+        ),
       )
     const foundAnswerComments =
       await this.answerCommentRepository.findManyByAnswerId(answerId, {
@@ -32,6 +40,6 @@ export class FetchAnswerCommentsUseCase {
         pageSize: pageSize ?? this.MAX_PAGE_SIZE,
       })
 
-    return { answerComments: foundAnswerComments }
+    return right({ answerComments: foundAnswerComments })
   }
 }

@@ -1,5 +1,9 @@
+import { Either, left, right } from '@/core/either'
+
 import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
+
+import { PaginationError } from './errors/pagination-error'
 
 interface FetchQuestionAnswersUseCaseRequest {
   page: number
@@ -7,9 +11,12 @@ interface FetchQuestionAnswersUseCaseRequest {
   questionId: string
 }
 
-interface FetchQuestionAnswersUseCaseResponse {
-  answers: Answer[]
-}
+type FetchQuestionAnswersUseCaseResponse = Either<
+  PaginationError,
+  {
+    answers: Answer[]
+  }
+>
 
 export class FetchQuestionAnswersUseCase {
   constructor(private readonly answerRepository: AnswerRepository) {}
@@ -21,14 +28,16 @@ export class FetchQuestionAnswersUseCase {
     questionId,
   }: FetchQuestionAnswersUseCaseRequest): Promise<FetchQuestionAnswersUseCaseResponse> {
     if (pageSize && pageSize > this.MAX_PAGE_SIZE)
-      throw new Error(
-        `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
+      return left(
+        new PaginationError(
+          `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
+        ),
       )
     const foundAnswers = await this.answerRepository.findManyByQuestionId(
       questionId,
       { page, pageSize: pageSize ?? this.MAX_PAGE_SIZE },
     )
 
-    return { answers: foundAnswers }
+    return right({ answers: foundAnswers })
   }
 }
