@@ -5,7 +5,7 @@ import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comment
 export class InMemoryAnswerCommentRepository
   implements AnswerCommentRepository
 {
-  private answerComments: AnswerComment[] = []
+  public answerComments: AnswerComment[] = []
 
   public async findById(id: string): Promise<AnswerComment | undefined> {
     const foundAnswerComment = this.answerComments.find(

@@ -5,6 +5,7 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 
 import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
 import { makeAnswer } from '@/test/factories/make-answer'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 describe('DeleteAnswer unit tests', () => {
   let deleteAnswerUseCase: DeleteAnswerUseCase
@@ -25,7 +26,7 @@ describe('DeleteAnswer unit tests', () => {
 
     expect(foundAnswer).toEqual(createdAnswer)
 
-    await deleteAnswerUseCase.execute({
+    const result = await deleteAnswerUseCase.execute({
       answerId: new UniqueIdentifier(createdAnswer.id),
       authorId: new UniqueIdentifier(createdAnswer.authorId),
     })
@@ -34,6 +35,7 @@ describe('DeleteAnswer unit tests', () => {
       createdAnswer.id,
     )
 
+    expect(result.isRight()).toBe(true)
     expect(foundAnswerAfterDeletion).not.toBeTruthy()
   })
 
@@ -41,11 +43,14 @@ describe('DeleteAnswer unit tests', () => {
     const createdAnswer = makeAnswer()
     await inMemoryAnswerRepository.create(createdAnswer)
 
-    await expect(
-      deleteAnswerUseCase.execute({
-        authorId: new UniqueIdentifier('any-author-id-that-is-not-the-creator'),
-        answerId: new UniqueIdentifier(createdAnswer.id),
-      }),
-    ).rejects.toThrowError('User not allowed to delete this answer')
+    const result = await deleteAnswerUseCase.execute({
+      authorId: new UniqueIdentifier('any-author-id-that-is-not-the-creator'),
+      answerId: new UniqueIdentifier(createdAnswer.id),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
+      new NotAllowedError('User not allowed to delete this answer'),
+    )
   })
 })

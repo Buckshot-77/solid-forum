@@ -4,6 +4,7 @@ import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-questi
 import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { makeQuestion } from '@/test/factories/make-question'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 describe('CommentOnQuestion unit tests', () => {
   let commentOnQuestionUseCase: CommentOnQuestionUseCase
@@ -19,29 +20,32 @@ describe('CommentOnQuestion unit tests', () => {
     )
   })
 
-  it('should throw if question does not exist', async () => {
-    await expect(
-      commentOnQuestionUseCase.execute({
-        authorId: new UniqueIdentifier('any-author-id'),
-        content: 'any-content',
-        questionId: new UniqueIdentifier('any-question-id'),
-      }),
-    ).rejects.toThrowError('Question not found')
+  it('should return ResourceNotFoundError if question does not exist', async () => {
+    const result = await commentOnQuestionUseCase.execute({
+      authorId: new UniqueIdentifier('any-author-id'),
+      content: 'any-content',
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
+      new ResourceNotFoundError('Question not found'),
+    )
   })
 
   it('should be able to create questionComment when a valid questionId is given', async () => {
     const createdQuestion = makeQuestion()
     await inMemoryQuestionRepository.create(createdQuestion)
 
-    const { questionComment: createdQuestionComment } =
-      await commentOnQuestionUseCase.execute({
-        authorId: new UniqueIdentifier('any-author-id'),
-        content: 'any-content',
-        questionId: new UniqueIdentifier(createdQuestion.id),
-      })
+    const result = await commentOnQuestionUseCase.execute({
+      authorId: new UniqueIdentifier('any-author-id'),
+      content: 'any-content',
+      questionId: new UniqueIdentifier(createdQuestion.id),
+    })
 
-    expect(createdQuestionComment.authorId).toEqual('any-author-id')
-    expect(createdQuestionComment.content).toEqual('any-content')
-    expect(createdQuestionComment.questionId).toEqual(createdQuestion.id)
+    expect(result.isRight()).toBe(true)
+    expect(result.value).toEqual({
+      questionComment: inMemoryQuestionCommentRepository.questionComments[0],
+    })
   })
 })

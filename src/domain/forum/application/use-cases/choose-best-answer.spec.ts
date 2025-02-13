@@ -26,13 +26,13 @@ describe('Choose Best Answer unit tests', () => {
   })
 
   it('should return ResourceNotFoundError if no answer is found', async () => {
-    const response = await chooseBestAnswerUseCase.execute({
+    const result = await chooseBestAnswerUseCase.execute({
       answerId: 'any-answer-id',
       questionAuthorId: 'any-question-author-id',
     })
 
-    expect(response.isLeft()).toBe(true)
-    expect(response.value).toEqual(
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
       new ResourceNotFoundError('Answer was not found'),
     )
   })
@@ -42,12 +42,12 @@ describe('Choose Best Answer unit tests', () => {
 
     await answerRepository.create(createdAnswer)
 
-    const response = await chooseBestAnswerUseCase.execute({
+    const result = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,
       questionAuthorId: 'any-question-author-id',
     })
-    expect(response.isLeft()).toBe(true)
-    expect(response.value).toEqual(
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
       new ResourceNotFoundError('Question was not found'),
     )
   })
@@ -61,13 +61,13 @@ describe('Choose Best Answer unit tests', () => {
     await questionRepository.create(createdQuestion)
     await answerRepository.create(createdAnswer)
 
-    const response = await chooseBestAnswerUseCase.execute({
+    const result = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,
       questionAuthorId: 'any-question-author-id',
     })
 
-    expect(response.isLeft()).toBe(true)
-    expect(response.value).toEqual(
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
       new NotAllowedError('Question is not from this author'),
     )
   })
@@ -81,13 +81,13 @@ describe('Choose Best Answer unit tests', () => {
     await questionRepository.create(createdQuestion)
     await answerRepository.create(createdAnswer)
 
-    const response = await chooseBestAnswerUseCase.execute({
+    const result = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,
       questionAuthorId: createdQuestion.authorId,
     })
 
-    expect(response.isRight()).toBe(true)
-    expect(response.value).toEqual({
+    expect(result.isRight()).toBe(true)
+    expect(result.value).toEqual({
       questionId: createdQuestion.id,
       bestAnswerId: createdAnswer.id,
     })

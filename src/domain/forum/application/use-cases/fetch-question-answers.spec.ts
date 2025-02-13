@@ -5,6 +5,7 @@ import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-case
 import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
+import { PaginationError } from './errors/pagination-error'
 
 describe('FetchQuestionAnswers unit tests', () => {
   let fetchQuestionAnswersUseCase: FetchQuestionAnswersUseCase
@@ -17,17 +18,19 @@ describe('FetchQuestionAnswers unit tests', () => {
     )
   })
 
-  it('should throw an error if pageSize exceeds max page size allowed', async () => {
+  it('should return PaginationError if pageSize exceeds max page size allowed', async () => {
     const createdAnswer = makeAnswer()
     await inMemoryAnswerRepository.create(createdAnswer)
 
-    await expect(
-      fetchQuestionAnswersUseCase.execute({
-        page: 1,
-        pageSize: 31,
-        questionId: 'any-question-id',
-      }),
-    ).rejects.toThrowError('Page size not allowed! Max page size is 30')
+    const result = await fetchQuestionAnswersUseCase.execute({
+      page: 1,
+      pageSize: 31,
+      questionId: 'any-question-id',
+    })
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
+      new PaginationError('Page size not allowed! Max page size is 30'),
+    )
   })
 
   it('should return the first 30 results if no pageSize is given', async () => {
@@ -38,14 +41,14 @@ describe('FetchQuestionAnswers unit tests', () => {
       await inMemoryAnswerRepository.create(createdAnswer)
     }
 
-    const { answers: foundAnswers } = await fetchQuestionAnswersUseCase.execute(
-      {
-        page: 1,
-        questionId: 'any-question-id',
-      },
-    )
+    const result = await fetchQuestionAnswersUseCase.execute({
+      page: 1,
+      questionId: 'any-question-id',
+    })
 
-    expect(foundAnswers.length).toBe(30)
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.answers.length).toBe(30)
+    expect(result.isRight()).toBe(true)
   })
 
   it('should only fetch the answers from the given question', async () => {
@@ -63,14 +66,14 @@ describe('FetchQuestionAnswers unit tests', () => {
       await inMemoryAnswerRepository.create(createdAnswer)
     }
 
-    const { answers: foundAnswers } = await fetchQuestionAnswersUseCase.execute(
-      {
-        page: 1,
-        questionId: 'any-question-id',
-      },
-    )
+    const result = await fetchQuestionAnswersUseCase.execute({
+      page: 1,
+      questionId: 'any-question-id',
+    })
 
-    expect(foundAnswers.length).toBe(10)
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.answers.length).toBe(10)
+    expect(result.isRight()).toBe(true)
   })
 
   it('should order results by createdAt date', async () => {
@@ -91,12 +94,18 @@ describe('FetchQuestionAnswers unit tests', () => {
     await inMemoryAnswerRepository.create(secondAnswer)
     await inMemoryAnswerRepository.create(thirdAnswer)
 
-    const { answers } = await fetchQuestionAnswersUseCase.execute({
+    const result = await fetchQuestionAnswersUseCase.execute({
       page: 1,
       questionId: 'any-question-id',
     })
 
-    expect(answers).toEqual([thirdAnswer, secondAnswer, firstAnswer])
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.answers).toEqual([
+      thirdAnswer,
+      secondAnswer,
+      firstAnswer,
+    ])
+    expect(result.isRight()).toBe(true)
   })
 
   it('should return 20 results for 50 answers created and page 2 requested, for page size 30', async () => {
@@ -107,10 +116,13 @@ describe('FetchQuestionAnswers unit tests', () => {
       await inMemoryAnswerRepository.create(createdAnswer)
     }
 
-    const { answers: foundAnswers } = await fetchQuestionAnswersUseCase.execute(
-      { page: 2, questionId: 'any-question-id' },
-    )
+    const result = await fetchQuestionAnswersUseCase.execute({
+      page: 2,
+      questionId: 'any-question-id',
+    })
 
-    expect(foundAnswers.length).toBe(20)
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.answers.length).toBe(20)
+    expect(result.isRight()).toBe(true)
   })
 })

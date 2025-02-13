@@ -5,6 +5,7 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 
 import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
+import { NotAllowedError } from './errors/not-allowed-error'
 
 describe('DeleteQuestionComment unit tests', () => {
   let deleteQuestionCommentUseCase: DeleteQuestionCommentUseCase
@@ -17,7 +18,7 @@ describe('DeleteQuestionComment unit tests', () => {
     )
   })
 
-  it('should be able to delete a question', async () => {
+  it('should be able to delete a question comment', async () => {
     const createdQuestionComment = makeQuestionComment()
     await inMemoryQuestionCommentRepository.create(createdQuestionComment)
 
@@ -27,7 +28,7 @@ describe('DeleteQuestionComment unit tests', () => {
 
     expect(foundQuestion).toEqual(createdQuestionComment)
 
-    await deleteQuestionCommentUseCase.execute({
+    const result = await deleteQuestionCommentUseCase.execute({
       questionCommentId: new UniqueIdentifier(createdQuestionComment.id),
       authorId: new UniqueIdentifier(createdQuestionComment.authorId),
     })
@@ -37,18 +38,22 @@ describe('DeleteQuestionComment unit tests', () => {
         createdQuestionComment.id,
       )
 
+    expect(result.isRight()).toBe(true)
     expect(foundQuestionAfterDeletion).not.toBeTruthy()
   })
 
-  it('should not allow a user that is not the author to delete an question', async () => {
+  it('should not allow a user that is not the author to delete a question comment', async () => {
     const createdQuestionComment = makeQuestionComment()
     await inMemoryQuestionCommentRepository.create(createdQuestionComment)
 
-    await expect(
-      deleteQuestionCommentUseCase.execute({
-        authorId: new UniqueIdentifier('any-author-id-that-is-not-the-creator'),
-        questionCommentId: new UniqueIdentifier(createdQuestionComment.id),
-      }),
-    ).rejects.toThrowError('User not allowed to delete this comment')
+    const result = await deleteQuestionCommentUseCase.execute({
+      authorId: new UniqueIdentifier('any-author-id-that-is-not-the-creator'),
+      questionCommentId: new UniqueIdentifier(createdQuestionComment.id),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
+      new NotAllowedError('User not allowed to delete this comment'),
+    )
   })
 })

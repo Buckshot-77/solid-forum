@@ -13,11 +13,7 @@ interface CreateQuestionUseCaseRequest {
 type CreateQuestionUseCaseResponse = Either<
   null,
   {
-    authorId: string
-    questionId: string
-    content: string
-    title: string
-    slug: string
+    question: Question
   }
 >
 
@@ -38,12 +34,6 @@ export class CreateQuestionUseCase {
 
     await this.questionRepository.create(question)
 
-    return right({
-      authorId: question.authorId,
-      questionId: question.id,
-      content: question.content,
-      slug: question.slug,
-      title: question.title,
-    })
+    return right({ question })
   }
 }

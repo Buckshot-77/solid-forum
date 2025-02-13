@@ -5,6 +5,7 @@ import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cas
 import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
+import { PaginationError } from './errors/pagination-error'
 
 describe('FetchQuestionComments unit tests', () => {
   let fetchQuestionCommentsUseCase: FetchQuestionCommentsUseCase
@@ -17,17 +18,20 @@ describe('FetchQuestionComments unit tests', () => {
     )
   })
 
-  it('should throw an error if pageSize exceeds max page size allowed', async () => {
+  it('should return PaginationError if pageSize exceeds max page size allowed', async () => {
     const createdQuestion = makeQuestionComment()
     await inMemoryQuestionCommentRepository.create(createdQuestion)
 
-    await expect(
-      fetchQuestionCommentsUseCase.execute({
-        page: 1,
-        pageSize: 31,
-        questionId: 'any-question-id',
-      }),
-    ).rejects.toThrowError('Page size not allowed! Max page size is 30')
+    const result = await fetchQuestionCommentsUseCase.execute({
+      page: 1,
+      pageSize: 31,
+      questionId: 'any-question-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toEqual(
+      new PaginationError('Page size not allowed! Max page size is 30'),
+    )
   })
 
   it('should return the first 30 results if no pageSize is given', async () => {
@@ -38,13 +42,14 @@ describe('FetchQuestionComments unit tests', () => {
       await inMemoryQuestionCommentRepository.create(createdQuestion)
     }
 
-    const { questionComments: foundQuestionComments } =
-      await fetchQuestionCommentsUseCase.execute({
-        page: 1,
-        questionId: 'any-question-id',
-      })
+    const result = await fetchQuestionCommentsUseCase.execute({
+      page: 1,
+      questionId: 'any-question-id',
+    })
 
-    expect(foundQuestionComments.length).toBe(30)
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.questionComments.length).toBe(30)
+    expect(result.isRight()).toBe(true)
   })
 
   it('should only fetch the question comments from the given question', async () => {
@@ -62,43 +67,46 @@ describe('FetchQuestionComments unit tests', () => {
       await inMemoryQuestionCommentRepository.create(createdQuestion)
     }
 
-    const { questionComments: foundQuestionComments } =
-      await fetchQuestionCommentsUseCase.execute({
-        page: 1,
-        questionId: 'any-question-id',
-      })
-
-    expect(foundQuestionComments.length).toBe(10)
-  })
-
-  it('should order results by createdAt date', async () => {
-    const firstQuestion = makeQuestionComment({
-      createdAt: new Date('2020-01-01'),
-      questionId: new UniqueIdentifier('any-question-id'),
-    })
-    const secondQuestion = makeQuestionComment({
-      createdAt: new Date('2021-01-01'),
-      questionId: new UniqueIdentifier('any-question-id'),
-    })
-    const thirdQuestion = makeQuestionComment({
-      createdAt: new Date('2022-01-01'),
-      questionId: new UniqueIdentifier('any-question-id'),
-    })
-
-    await inMemoryQuestionCommentRepository.create(firstQuestion)
-    await inMemoryQuestionCommentRepository.create(secondQuestion)
-    await inMemoryQuestionCommentRepository.create(thirdQuestion)
-
-    const { questionComments } = await fetchQuestionCommentsUseCase.execute({
+    const result = await fetchQuestionCommentsUseCase.execute({
       page: 1,
       questionId: 'any-question-id',
     })
 
-    expect(questionComments).toEqual([
-      thirdQuestion,
-      secondQuestion,
-      firstQuestion,
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.questionComments.length).toBe(10)
+    expect(result.isRight()).toBe(true)
+  })
+
+  it('should order results by createdAt date', async () => {
+    const firstQuestionComment = makeQuestionComment({
+      createdAt: new Date('2020-01-01'),
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+    const secondQuestionComment = makeQuestionComment({
+      createdAt: new Date('2021-01-01'),
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+    const thirdQuestionComment = makeQuestionComment({
+      createdAt: new Date('2022-01-01'),
+      questionId: new UniqueIdentifier('any-question-id'),
+    })
+
+    await inMemoryQuestionCommentRepository.create(firstQuestionComment)
+    await inMemoryQuestionCommentRepository.create(secondQuestionComment)
+    await inMemoryQuestionCommentRepository.create(thirdQuestionComment)
+
+    const result = await fetchQuestionCommentsUseCase.execute({
+      page: 1,
+      questionId: 'any-question-id',
+    })
+
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.questionComments).toEqual([
+      thirdQuestionComment,
+      secondQuestionComment,
+      firstQuestionComment,
     ])
+    expect(result.isRight()).toBe(true)
   })
 
   it('should return 20 results for 50 question comments created and page 2 requested, for page size 30', async () => {
@@ -109,12 +117,13 @@ describe('FetchQuestionComments unit tests', () => {
       await inMemoryQuestionCommentRepository.create(createdQuestion)
     }
 
-    const { questionComments: foundQuestionComments } =
-      await fetchQuestionCommentsUseCase.execute({
-        page: 2,
-        questionId: 'any-question-id',
-      })
+    const result = await fetchQuestionCommentsUseCase.execute({
+      page: 2,
+      questionId: 'any-question-id',
+    })
 
-    expect(foundQuestionComments.length).toBe(20)
+    // @ts-expect-error TS doesn't know the type due to a lack of an if statement. This is expected, and the workaround is necessary for the test
+    expect(result.value.questionComments.length).toBe(20)
+    expect(result.isRight()).toBe(true)
   })
 })

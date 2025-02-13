@@ -14,18 +14,15 @@ describe('CreateQuestion unit tests', () => {
   })
 
   it('should be able to create a question', async () => {
-    const response = await createQuestionUseCase.execute({
+    const result = await createQuestionUseCase.execute({
       authorId: 'any author id',
       content: 'any content',
       title: 'any title',
     })
 
-    expect(response).toEqual({
-      authorId: 'any author id',
-      content: 'any content',
-      slug: 'any-title',
-      questionId: expect.any(String),
-      title: 'any title',
+    expect(result.isRight()).toBe(true)
+    expect(result.value).toEqual({
+      question: inMemoryQuestionRepository.questions[0],
     })
   })
 })
