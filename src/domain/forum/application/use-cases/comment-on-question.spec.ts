@@ -2,7 +2,6 @@ import { expect, describe, it, beforeEach } from 'vitest'
 import { CommentOnQuestionUseCase } from '@/domain/forum/application/use-cases/comment-on-question'
 import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
 import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
-import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { makeQuestion } from '@/test/factories/make-question'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
@@ -22,9 +21,9 @@ describe('CommentOnQuestion unit tests', () => {
 
   it('should return ResourceNotFoundError if question does not exist', async () => {
     const result = await commentOnQuestionUseCase.execute({
-      authorId: new UniqueIdentifier('any-author-id'),
+      authorId: 'any-author-id',
       content: 'any-content',
-      questionId: new UniqueIdentifier('any-question-id'),
+      questionId: 'any-question-id',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -38,9 +37,9 @@ describe('CommentOnQuestion unit tests', () => {
     await inMemoryQuestionRepository.create(createdQuestion)
 
     const result = await commentOnQuestionUseCase.execute({
-      authorId: new UniqueIdentifier('any-author-id'),
+      authorId: 'any-author-id',
       content: 'any-content',
-      questionId: new UniqueIdentifier(createdQuestion.id),
+      questionId: createdQuestion.id,
     })
 
     expect(result.isRight()).toBe(true)

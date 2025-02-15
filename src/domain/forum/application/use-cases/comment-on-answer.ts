@@ -9,8 +9,8 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface CommentOnAnswerUseCaseRequest {
   content: string
-  authorId: UniqueIdentifier
-  answerId: UniqueIdentifier
+  authorId: string
+  answerId: string
 }
 
 type CommentOnAnswerUseCaseResponse = Either<
@@ -35,8 +35,8 @@ export class CommentOnAnswerUseCase {
 
     const answerComment = AnswerComment.create({
       content,
-      answerId,
-      authorId: authorId,
+      answerId: new UniqueIdentifier(answerId),
+      authorId: new UniqueIdentifier(authorId),
       createdAt: new Date(),
       updatedAt: new Date(),
     })

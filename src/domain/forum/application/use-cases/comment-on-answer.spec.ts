@@ -2,7 +2,6 @@ import { expect, describe, it, beforeEach } from 'vitest'
 import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer'
 import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
 import { InMemoryAnswerCommentRepository } from '@/test/repositories/in-memory-answer-comment-repository'
-import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
@@ -22,9 +21,9 @@ describe('CommentOnAnswer unit tests', () => {
 
   it('should return ResourceNotFoundError if answer does not exist', async () => {
     const result = await commentOnAnswerUseCase.execute({
-      authorId: new UniqueIdentifier('any-author-id'),
+      authorId: 'any-author-id',
       content: 'any-content',
-      answerId: new UniqueIdentifier('any-answer-id'),
+      answerId: 'any-answer-id',
     })
 
     expect(result.isLeft())
@@ -36,9 +35,9 @@ describe('CommentOnAnswer unit tests', () => {
     await inMemoryAnswerRepository.create(createdAnswer)
 
     const result = await commentOnAnswerUseCase.execute({
-      authorId: new UniqueIdentifier('any-author-id'),
+      authorId: 'any-author-id',
       content: 'any-content',
-      answerId: new UniqueIdentifier(createdAnswer.id),
+      answerId: createdAnswer.id,
     })
 
     expect(result.isRight()).toBe(true)

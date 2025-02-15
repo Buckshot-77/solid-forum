@@ -1,7 +1,6 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment'
-import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 
 import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
@@ -29,8 +28,8 @@ describe('DeleteQuestionComment unit tests', () => {
     expect(foundQuestion).toEqual(createdQuestionComment)
 
     const result = await deleteQuestionCommentUseCase.execute({
-      questionCommentId: new UniqueIdentifier(createdQuestionComment.id),
-      authorId: new UniqueIdentifier(createdQuestionComment.authorId),
+      questionCommentId: createdQuestionComment.id,
+      authorId: createdQuestionComment.authorId,
     })
 
     const foundQuestionAfterDeletion =
@@ -47,8 +46,8 @@ describe('DeleteQuestionComment unit tests', () => {
     await inMemoryQuestionCommentRepository.create(createdQuestionComment)
 
     const result = await deleteQuestionCommentUseCase.execute({
-      authorId: new UniqueIdentifier('any-author-id-that-is-not-the-creator'),
-      questionCommentId: new UniqueIdentifier(createdQuestionComment.id),
+      authorId: 'any-author-id-that-is-not-the-creator',
+      questionCommentId: createdQuestionComment.id,
     })
 
     expect(result.isLeft()).toBe(true)

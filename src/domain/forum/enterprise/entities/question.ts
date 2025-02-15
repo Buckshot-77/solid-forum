@@ -1,7 +1,8 @@
 import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
-import { Entity } from '@/core/entities/entity'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Optional } from '@/core/types/optional'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
+import { QuestionAttachment } from '@/domain/forum/enterprise/entities/question-attachment'
 
 export interface QuestionProps {
   title: string
@@ -9,11 +10,12 @@ export interface QuestionProps {
   content: string
   authorId: UniqueIdentifier
   bestAnswerId?: UniqueIdentifier
+  attachments?: QuestionAttachment[]
   createdAt: Date
   updatedAt?: Date
 }
 
-export class Question extends Entity<QuestionProps> {
+export class Question extends AggregateRoot<QuestionProps> {
   get title(): string {
     return this._props.title
   }
@@ -30,8 +32,23 @@ export class Question extends Entity<QuestionProps> {
     return this._props.authorId.toString()
   }
 
+  get preview(): string {
+    return this.content.slice(0, 120).trimEnd()
+  }
+
   get bestAnswerId(): string | undefined {
     return this._props.bestAnswerId?.toString()
+  }
+
+  get isNew(): boolean {
+    const THREE_DAYS_AGO = new Date().getMilliseconds() - 1000 * 3600 * 24 * 3
+
+    if (this.createdAt.getMilliseconds() < THREE_DAYS_AGO) return true
+    return false
+  }
+
+  get attachments() {
+    return this._props.attachments ?? []
   }
 
   get createdAt(): Date {
@@ -42,24 +59,13 @@ export class Question extends Entity<QuestionProps> {
     return this._props.updatedAt
   }
 
-  get isNew(): boolean {
-    const THREE_DAYS_AGO = new Date().getMilliseconds() - 1000 * 3600 * 24 * 3
-
-    if (this.createdAt.getMilliseconds() < THREE_DAYS_AGO) return true
-    return false
-  }
-
-  get preview(): string {
-    return this.content.slice(0, 120).trimEnd()
-  }
-
-  private touch() {
-    this._props.updatedAt = new Date()
-  }
-
   set content(content: string) {
     this._props.content = content
     this.touch()
+  }
+
+  set attachments(attachments: QuestionAttachment[]) {
+    this._props.attachments = attachments
   }
 
   set title(title: string) {
@@ -72,6 +78,10 @@ export class Question extends Entity<QuestionProps> {
     this._props.bestAnswerId = id
   }
 
+  private touch() {
+    this._props.updatedAt = new Date()
+  }
+
   static create(
     props: Optional<QuestionProps, 'createdAt' | 'slug'>,
     id?: UniqueIdentifier,
@@ -81,6 +91,7 @@ export class Question extends Entity<QuestionProps> {
         createdAt: new Date(),
         ...props,
         slug: props.slug ?? Slug.createFromText(props.title),
+        attachments: props.attachments ?? [],
       },
       id,
     )
