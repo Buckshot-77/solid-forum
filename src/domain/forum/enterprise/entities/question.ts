@@ -2,7 +2,7 @@ import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Optional } from '@/core/types/optional'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import { QuestionAttachment } from '@/domain/forum/enterprise/entities/question-attachment'
+import { QuestionAttachmentList } from '@/domain/forum/enterprise/entities/question-attachment-list'
 
 export interface QuestionProps {
   title: string
@@ -10,7 +10,7 @@ export interface QuestionProps {
   content: string
   authorId: UniqueIdentifier
   bestAnswerId?: UniqueIdentifier
-  attachments?: QuestionAttachment[]
+  attachments?: QuestionAttachmentList
   createdAt: Date
   updatedAt?: Date
 }
@@ -48,7 +48,7 @@ export class Question extends AggregateRoot<QuestionProps> {
   }
 
   get attachments() {
-    return this._props.attachments ?? []
+    return this._props.attachments ?? new QuestionAttachmentList()
   }
 
   get createdAt(): Date {
@@ -64,7 +64,7 @@ export class Question extends AggregateRoot<QuestionProps> {
     this.touch()
   }
 
-  set attachments(attachments: QuestionAttachment[]) {
+  set attachments(attachments: QuestionAttachmentList) {
     this._props.attachments = attachments
   }
 
@@ -91,7 +91,7 @@ export class Question extends AggregateRoot<QuestionProps> {
         createdAt: new Date(),
         ...props,
         slug: props.slug ?? Slug.createFromText(props.title),
-        attachments: props.attachments ?? [],
+        attachments: props.attachments ?? new QuestionAttachmentList(),
       },
       id,
     )
