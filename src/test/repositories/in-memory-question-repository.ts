@@ -1,9 +1,14 @@
 import { PaginationParams } from '@/core/repository/pagination-params'
+import { QuestionAttachmentRepository } from '@/domain/forum/application/repositories/question-attachment-repository'
 import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
 export class InMemoryQuestionRepository implements QuestionRepository {
   public questions: Question[] = []
+
+  constructor(
+    private readonly questionAttachmentRepository: QuestionAttachmentRepository,
+  ) {}
 
   public async findBySlug(slug_text: string): Promise<Question | undefined> {
     const foundQuestion = this.questions.find(
@@ -36,6 +41,8 @@ export class InMemoryQuestionRepository implements QuestionRepository {
     if (foundIndex === -1) {
       return
     }
+
+    await this.questionAttachmentRepository.deleteManyByQuestionId(id)
 
     this.questions.splice(foundIndex, 1)
   }

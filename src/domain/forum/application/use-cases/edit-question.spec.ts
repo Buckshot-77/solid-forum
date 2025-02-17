@@ -17,9 +17,13 @@ describe('EditQuestion unit tests', () => {
   let inMemoryQuestionAttachmentRepository: InMemoryQuestionAttachmentRepository
 
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
     inMemoryQuestionAttachmentRepository =
       new InMemoryQuestionAttachmentRepository()
+
+    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+      inMemoryQuestionAttachmentRepository,
+    )
+
     editQuestionUseCase = new EditQuestionUseCase(
       inMemoryQuestionRepository,
       inMemoryQuestionAttachmentRepository,

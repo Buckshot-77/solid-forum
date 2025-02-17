@@ -1,15 +1,27 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question'
+
+import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
+
 import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
+import { InMemoryQuestionAttachmentRepository } from '@/test/repositories/in-memory-question-attachment-repository'
+
 import { makeQuestion } from '@/test/factories/make-question'
+import { makeQuestionAttachment } from '@/test/factories/make-question-attachment'
+
 import { NotAllowedError } from './errors/not-allowed-error'
 
 describe('DeleteQuestion unit tests', () => {
   let deleteQuestionUseCase: DeleteQuestionUseCase
   let inMemoryQuestionRepository: InMemoryQuestionRepository
+  let inMemoryQuestionAttachmentRepository: InMemoryQuestionAttachmentRepository
 
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionAttachmentRepository =
+      new InMemoryQuestionAttachmentRepository()
+    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+      inMemoryQuestionAttachmentRepository,
+    )
     deleteQuestionUseCase = new DeleteQuestionUseCase(
       inMemoryQuestionRepository,
     )
@@ -25,6 +37,15 @@ describe('DeleteQuestion unit tests', () => {
 
     expect(foundQuestion).toEqual(createdQuestion)
 
+    inMemoryQuestionAttachmentRepository.questionAttachments.push(
+      makeQuestionAttachment({
+        questionId: new UniqueIdentifier(createdQuestion.id),
+      }),
+      makeQuestionAttachment({
+        questionId: new UniqueIdentifier(createdQuestion.id),
+      }),
+    )
+
     const result = await deleteQuestionUseCase.execute({
       questionId: createdQuestion.id,
       authorId: createdQuestion.authorId,
@@ -35,6 +56,9 @@ describe('DeleteQuestion unit tests', () => {
 
     expect(result.isRight()).toBe(true)
     expect(foundQuestionAfterDeletion).not.toBeTruthy()
+    expect(
+      inMemoryQuestionAttachmentRepository.questionAttachments,
+    ).toHaveLength(0)
   })
 
   it('should not allow a user that is not the author to delete a question', async () => {
