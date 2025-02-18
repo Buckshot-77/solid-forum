@@ -8,11 +8,11 @@ export interface AnswerAttachmentProps {
 
 export class AnswerAttachment extends Entity<AnswerAttachmentProps> {
   get answerId() {
-    return this._props.answerId
+    return this._props.answerId.toString()
   }
 
   get attachmentId() {
-    return this._props.attachmentId
+    return this._props.attachmentId.toString()
   }
 
   static create(props: AnswerAttachmentProps, id?: UniqueIdentifier) {

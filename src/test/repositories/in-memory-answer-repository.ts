@@ -1,9 +1,14 @@
 import { PaginationParams } from '@/core/repository/pagination-params'
+import { AnswerAttachmentRepository } from '@/domain/forum/application/repositories/answer-attachment-repository'
 import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 
 export class InMemoryAnswerRepository implements AnswerRepository {
   public answers: Answer[] = []
+
+  constructor(
+    private readonly answerAttachmentRepository: AnswerAttachmentRepository,
+  ) {}
 
   public async create(answer: Answer): Promise<void> {
     this.answers.push(answer)
@@ -47,6 +52,8 @@ export class InMemoryAnswerRepository implements AnswerRepository {
     if (foundIndex === -1) {
       return
     }
+
+    await this.answerAttachmentRepository.deleteManyByAnswerId(id)
 
     this.answers.splice(foundIndex, 1)
   }
