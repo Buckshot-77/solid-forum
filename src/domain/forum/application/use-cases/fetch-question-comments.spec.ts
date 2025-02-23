@@ -2,25 +2,25 @@ import { expect, describe, it, beforeEach } from 'vitest'
 
 import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments'
 
-import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
+import { InMemoryQuestionCommentsRepository } from '@/test/repositories/in-memory-question-comments-repository'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { PaginationError } from './errors/pagination-error'
 
 describe('FetchQuestionComments unit tests', () => {
   let fetchQuestionCommentsUseCase: FetchQuestionCommentsUseCase
-  let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
+  let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentRepository()
+    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
     fetchQuestionCommentsUseCase = new FetchQuestionCommentsUseCase(
-      inMemoryQuestionCommentRepository,
+      inMemoryQuestionCommentsRepository,
     )
   })
 
   it('should return PaginationError if pageSize exceeds max page size allowed', async () => {
     const createdQuestion = makeQuestionComment()
-    await inMemoryQuestionCommentRepository.create(createdQuestion)
+    await inMemoryQuestionCommentsRepository.create(createdQuestion)
 
     const result = await fetchQuestionCommentsUseCase.execute({
       page: 1,
@@ -39,7 +39,7 @@ describe('FetchQuestionComments unit tests', () => {
       const createdQuestion = makeQuestionComment({
         questionId: new UniqueIdentifier('any-question-id'),
       })
-      await inMemoryQuestionCommentRepository.create(createdQuestion)
+      await inMemoryQuestionCommentsRepository.create(createdQuestion)
     }
 
     const result = await fetchQuestionCommentsUseCase.execute({
@@ -57,14 +57,14 @@ describe('FetchQuestionComments unit tests', () => {
       const createdQuestion = makeQuestionComment({
         questionId: new UniqueIdentifier('any-question-id'),
       })
-      await inMemoryQuestionCommentRepository.create(createdQuestion)
+      await inMemoryQuestionCommentsRepository.create(createdQuestion)
     }
 
     for (let i = 0; i < 10; i++) {
       const createdQuestion = makeQuestionComment({
         questionId: new UniqueIdentifier('other-question-id'),
       })
-      await inMemoryQuestionCommentRepository.create(createdQuestion)
+      await inMemoryQuestionCommentsRepository.create(createdQuestion)
     }
 
     const result = await fetchQuestionCommentsUseCase.execute({
@@ -91,9 +91,9 @@ describe('FetchQuestionComments unit tests', () => {
       questionId: new UniqueIdentifier('any-question-id'),
     })
 
-    await inMemoryQuestionCommentRepository.create(firstQuestionComment)
-    await inMemoryQuestionCommentRepository.create(secondQuestionComment)
-    await inMemoryQuestionCommentRepository.create(thirdQuestionComment)
+    await inMemoryQuestionCommentsRepository.create(firstQuestionComment)
+    await inMemoryQuestionCommentsRepository.create(secondQuestionComment)
+    await inMemoryQuestionCommentsRepository.create(thirdQuestionComment)
 
     const result = await fetchQuestionCommentsUseCase.execute({
       page: 1,
@@ -114,7 +114,7 @@ describe('FetchQuestionComments unit tests', () => {
       const createdQuestion = makeQuestionComment({
         questionId: new UniqueIdentifier('any-question-id'),
       })
-      await inMemoryQuestionCommentRepository.create(createdQuestion)
+      await inMemoryQuestionCommentsRepository.create(createdQuestion)
     }
 
     const result = await fetchQuestionCommentsUseCase.execute({

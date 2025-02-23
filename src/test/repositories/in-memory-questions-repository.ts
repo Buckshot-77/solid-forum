@@ -1,13 +1,13 @@
 import { PaginationParams } from '@/core/repository/pagination-params'
-import { QuestionAttachmentRepository } from '@/domain/forum/application/repositories/question-attachment-repository'
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository'
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
-export class InMemoryQuestionRepository implements QuestionRepository {
+export class InMemoryQuestionsRepository implements QuestionsRepository {
   public questions: Question[] = []
 
   constructor(
-    private readonly questionAttachmentRepository: QuestionAttachmentRepository,
+    private readonly questionAttachmentsRepository: QuestionAttachmentsRepository,
   ) {}
 
   public async findBySlug(slug_text: string): Promise<Question | undefined> {
@@ -42,7 +42,7 @@ export class InMemoryQuestionRepository implements QuestionRepository {
       return
     }
 
-    await this.questionAttachmentRepository.deleteManyByQuestionId(id)
+    await this.questionAttachmentsRepository.deleteManyByQuestionId(id)
 
     this.questions.splice(foundIndex, 1)
   }

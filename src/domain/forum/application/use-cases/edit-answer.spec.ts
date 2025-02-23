@@ -1,8 +1,8 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer'
 
-import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
-import { InMemoryAnswerAttachmentRepository } from '@/test/repositories/in-memory-answer-attachment-repository'
+import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers-repository'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repositories/in-memory-answer-attachments-repository'
 
 import { makeAnswer } from '@/test/factories/make-answer'
 
@@ -13,26 +13,26 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 
 describe('EditAnswer unit tests', () => {
   let editAnswerUseCase: EditAnswerUseCase
-  let inMemoryAnswerRepository: InMemoryAnswerRepository
-  let inMemoryAnswerAttachmentRepository: InMemoryAnswerAttachmentRepository
+  let inMemoryAnswersRepository: InMemoryAnswersRepository
+  let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 
   beforeEach(() => {
-    inMemoryAnswerAttachmentRepository =
-      new InMemoryAnswerAttachmentRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
 
-    inMemoryAnswerRepository = new InMemoryAnswerRepository(
-      inMemoryAnswerAttachmentRepository,
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
     )
 
     editAnswerUseCase = new EditAnswerUseCase(
-      inMemoryAnswerRepository,
-      inMemoryAnswerAttachmentRepository,
+      inMemoryAnswersRepository,
+      inMemoryAnswerAttachmentsRepository,
     )
   })
 
   it('should return ResourceNotFound if answer does not exist', async () => {
     const createdAnswer = makeAnswer()
-    await inMemoryAnswerRepository.create(createdAnswer)
+    await inMemoryAnswersRepository.create(createdAnswer)
 
     const result = await editAnswerUseCase.execute({
       authorId: createdAnswer.authorId,
@@ -49,7 +49,7 @@ describe('EditAnswer unit tests', () => {
 
   it('should return NotAllowedError if author id is not the same as the answer author id', async () => {
     const createdAnswer = makeAnswer()
-    await inMemoryAnswerRepository.create(createdAnswer)
+    await inMemoryAnswersRepository.create(createdAnswer)
 
     const result = await editAnswerUseCase.execute({
       authorId: 'another-author-id',
@@ -66,9 +66,9 @@ describe('EditAnswer unit tests', () => {
 
   it('should be able to edit a answer', async () => {
     const createdAnswer = makeAnswer()
-    await inMemoryAnswerRepository.create(createdAnswer)
+    await inMemoryAnswersRepository.create(createdAnswer)
 
-    inMemoryAnswerAttachmentRepository.answerAttachments.push(
+    inMemoryAnswerAttachmentsRepository.answerAttachments.push(
       makeAnswerAttachment({
         answerId: new UniqueIdentifier(createdAnswer.id),
         attachmentId: new UniqueIdentifier('1'),
@@ -93,7 +93,7 @@ describe('EditAnswer unit tests', () => {
       }),
     })
     expect(
-      inMemoryAnswerRepository.answers[0].attachments.currentItems,
+      inMemoryAnswersRepository.answers[0].attachments.currentItems,
     ).toEqual([
       expect.objectContaining({
         _props: expect.objectContaining({

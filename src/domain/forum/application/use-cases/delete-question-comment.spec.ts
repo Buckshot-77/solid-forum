@@ -2,26 +2,26 @@ import { expect, describe, it, beforeEach } from 'vitest'
 
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment'
 
-import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
+import { InMemoryQuestionCommentsRepository } from '@/test/repositories/in-memory-question-comments-repository'
 import { makeQuestionComment } from '@/test/factories/make-question-comment'
 import { NotAllowedError } from './errors/not-allowed-error'
 
 describe('DeleteQuestionComment unit tests', () => {
   let deleteQuestionCommentUseCase: DeleteQuestionCommentUseCase
-  let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
+  let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentRepository()
+    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
     deleteQuestionCommentUseCase = new DeleteQuestionCommentUseCase(
-      inMemoryQuestionCommentRepository,
+      inMemoryQuestionCommentsRepository,
     )
   })
 
   it('should be able to delete a question comment', async () => {
     const createdQuestionComment = makeQuestionComment()
-    await inMemoryQuestionCommentRepository.create(createdQuestionComment)
+    await inMemoryQuestionCommentsRepository.create(createdQuestionComment)
 
-    const foundQuestion = await inMemoryQuestionCommentRepository.findById(
+    const foundQuestion = await inMemoryQuestionCommentsRepository.findById(
       createdQuestionComment.id,
     )
 
@@ -33,7 +33,7 @@ describe('DeleteQuestionComment unit tests', () => {
     })
 
     const foundQuestionAfterDeletion =
-      await inMemoryQuestionCommentRepository.findById(
+      await inMemoryQuestionCommentsRepository.findById(
         createdQuestionComment.id,
       )
 
@@ -43,7 +43,7 @@ describe('DeleteQuestionComment unit tests', () => {
 
   it('should not allow a user that is not the author to delete a question comment', async () => {
     const createdQuestionComment = makeQuestionComment()
-    await inMemoryQuestionCommentRepository.create(createdQuestionComment)
+    await inMemoryQuestionCommentsRepository.create(createdQuestionComment)
 
     const result = await deleteQuestionCommentUseCase.execute({
       authorId: 'any-author-id-that-is-not-the-creator',

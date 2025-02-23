@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either'
 
-import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 
 import { PaginationError } from './errors/pagination-error'
@@ -19,7 +19,7 @@ type FetchQuestionAnswersUseCaseResponse = Either<
 >
 
 export class FetchQuestionAnswersUseCase {
-  constructor(private readonly answerRepository: AnswerRepository) {}
+  constructor(private readonly answersRepository: AnswersRepository) {}
   private readonly MAX_PAGE_SIZE = 30
 
   public async execute({
@@ -33,7 +33,7 @@ export class FetchQuestionAnswersUseCase {
           `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
         ),
       )
-    const foundAnswers = await this.answerRepository.findManyByQuestionId(
+    const foundAnswers = await this.answersRepository.findManyByQuestionId(
       questionId,
       { page, pageSize: pageSize ?? this.MAX_PAGE_SIZE },
     )

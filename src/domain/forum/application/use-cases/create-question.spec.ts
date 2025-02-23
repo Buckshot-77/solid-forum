@@ -1,15 +1,15 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question'
-import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
+import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
 
 describe('CreateQuestion unit tests', () => {
   let createQuestionUseCase: CreateQuestionUseCase
-  let inMemoryQuestionRepository: InMemoryQuestionRepository
+  let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
     createQuestionUseCase = new CreateQuestionUseCase(
-      inMemoryQuestionRepository,
+      inMemoryQuestionsRepository,
     )
   })
 
@@ -22,7 +22,7 @@ describe('CreateQuestion unit tests', () => {
 
     expect(result.isRight()).toBe(true)
     expect(result.value).toEqual({
-      question: inMemoryQuestionRepository.questions[0],
+      question: inMemoryQuestionsRepository.questions[0],
     })
   })
 })

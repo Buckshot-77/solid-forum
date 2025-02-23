@@ -1,21 +1,21 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { CommentOnQuestionUseCase } from '@/domain/forum/application/use-cases/comment-on-question'
-import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
-import { InMemoryQuestionCommentRepository } from '@/test/repositories/in-memory-question-comment-repository'
+import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
+import { InMemoryQuestionCommentsRepository } from '@/test/repositories/in-memory-question-comments-repository'
 import { makeQuestion } from '@/test/factories/make-question'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 describe('CommentOnQuestion unit tests', () => {
   let commentOnQuestionUseCase: CommentOnQuestionUseCase
-  let inMemoryQuestionRepository: InMemoryQuestionRepository
-  let inMemoryQuestionCommentRepository: InMemoryQuestionCommentRepository
+  let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+  let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
-    inMemoryQuestionCommentRepository = new InMemoryQuestionCommentRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
     commentOnQuestionUseCase = new CommentOnQuestionUseCase(
-      inMemoryQuestionRepository,
-      inMemoryQuestionCommentRepository,
+      inMemoryQuestionsRepository,
+      inMemoryQuestionCommentsRepository,
     )
   })
 
@@ -34,7 +34,7 @@ describe('CommentOnQuestion unit tests', () => {
 
   it('should be able to create questionComment when a valid questionId is given', async () => {
     const createdQuestion = makeQuestion()
-    await inMemoryQuestionRepository.create(createdQuestion)
+    await inMemoryQuestionsRepository.create(createdQuestion)
 
     const result = await commentOnQuestionUseCase.execute({
       authorId: 'any-author-id',
@@ -44,7 +44,7 @@ describe('CommentOnQuestion unit tests', () => {
 
     expect(result.isRight()).toBe(true)
     expect(result.value).toEqual({
-      questionComment: inMemoryQuestionCommentRepository.questionComments[0],
+      questionComment: inMemoryQuestionCommentsRepository.questionComments[0],
     })
   })
 })

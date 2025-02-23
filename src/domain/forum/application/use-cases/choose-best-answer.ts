@@ -1,8 +1,8 @@
 import { Either, left, right } from '@/core/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
-import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
@@ -22,20 +22,20 @@ type ChooseBestAnswerUseCaseResponse = Either<
 
 export class ChooseBestAnswerUseCase {
   constructor(
-    private readonly answerRepository: AnswerRepository,
-    private readonly questionRepository: QuestionRepository,
+    private readonly answersRepository: AnswersRepository,
+    private readonly questionsRepository: QuestionsRepository,
   ) {}
 
   public async execute({
     answerId,
     questionAuthorId,
   }: ChooseBestAnswerUseCaseRequest): Promise<ChooseBestAnswerUseCaseResponse> {
-    const foundAnswer = await this.answerRepository.findById(answerId)
+    const foundAnswer = await this.answersRepository.findById(answerId)
     if (!foundAnswer) {
       return left(new ResourceNotFoundError('Answer was not found'))
     }
 
-    const foundQuestion = await this.questionRepository.findById(
+    const foundQuestion = await this.questionsRepository.findById(
       foundAnswer.questionId,
     )
 
@@ -48,7 +48,7 @@ export class ChooseBestAnswerUseCase {
 
     foundQuestion.bestAnswerId = new UniqueIdentifier(foundAnswer.id)
 
-    await this.questionRepository.save(foundQuestion)
+    await this.questionsRepository.save(foundQuestion)
 
     return right({ bestAnswerId: foundAnswer.id, questionId: foundQuestion.id })
   }

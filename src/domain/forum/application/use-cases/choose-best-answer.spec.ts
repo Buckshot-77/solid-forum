@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
-import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
+import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers-repository'
+import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
 import { ChooseBestAnswerUseCase } from './choose-best-answer'
 import { makeQuestion } from '@/test/factories/make-question'
 import { makeAnswer } from '@/test/factories/make-answer'
@@ -10,18 +10,18 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
 
-let answerRepository: InMemoryAnswerRepository
-let questionRepository: InMemoryQuestionRepository
+let answersRepository: InMemoryAnswersRepository
+let questionsRepository: InMemoryQuestionsRepository
 
 let chooseBestAnswerUseCase: ChooseBestAnswerUseCase
 
 describe('Choose Best Answer unit tests', () => {
   beforeEach(() => {
-    answerRepository = new InMemoryAnswerRepository()
-    questionRepository = new InMemoryQuestionRepository()
+    answersRepository = new InMemoryAnswersRepository()
+    questionsRepository = new InMemoryQuestionsRepository()
     chooseBestAnswerUseCase = new ChooseBestAnswerUseCase(
-      answerRepository,
-      questionRepository,
+      answersRepository,
+      questionsRepository,
     )
   })
 
@@ -40,7 +40,7 @@ describe('Choose Best Answer unit tests', () => {
   it('should return ResourceNotFoundError if answer is found but, bizarrely, using the given questionId does not find a question', async () => {
     const createdAnswer = makeAnswer()
 
-    await answerRepository.create(createdAnswer)
+    await answersRepository.create(createdAnswer)
 
     const result = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,
@@ -58,8 +58,8 @@ describe('Choose Best Answer unit tests', () => {
       questionId: new UniqueIdentifier(createdQuestion.id),
     })
 
-    await questionRepository.create(createdQuestion)
-    await answerRepository.create(createdAnswer)
+    await questionsRepository.create(createdQuestion)
+    await answersRepository.create(createdAnswer)
 
     const result = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,
@@ -78,8 +78,8 @@ describe('Choose Best Answer unit tests', () => {
       questionId: new UniqueIdentifier(createdQuestion.id),
     })
 
-    await questionRepository.create(createdQuestion)
-    await answerRepository.create(createdAnswer)
+    await questionsRepository.create(createdQuestion)
+    await answersRepository.create(createdAnswer)
 
     const result = await chooseBestAnswerUseCase.execute({
       answerId: createdAnswer.id,

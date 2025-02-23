@@ -2,14 +2,14 @@ import { Either, left, right } from '@/core/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 
-import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
 import { AnswerAttachment } from '@/domain/forum/enterprise/entities/answer-attachment'
 import { AnswerAttachmentList } from '@/domain/forum/enterprise/entities/answer-attachment-list'
 
 import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
-import { AnswerAttachmentRepository } from '../repositories/answer-attachment-repository'
+import { AnswerAttachmentsRepository } from '../repositories/answer-attachments-repository'
 
 export interface EditAnswerRequest {
   answerId: string
@@ -27,8 +27,8 @@ type EditAnswerResponse = Either<
 
 export class EditAnswerUseCase {
   constructor(
-    private readonly answerRepository: AnswerRepository,
-    private readonly answerAttachmentRepository: AnswerAttachmentRepository,
+    private readonly answersRepository: AnswersRepository,
+    private readonly answerAttachmentsRepository: AnswerAttachmentsRepository,
   ) {}
 
   public async execute({
@@ -37,7 +37,7 @@ export class EditAnswerUseCase {
     answerId,
     attachmentIds,
   }: EditAnswerRequest): Promise<EditAnswerResponse> {
-    const foundAnswer = await this.answerRepository.findById(answerId)
+    const foundAnswer = await this.answersRepository.findById(answerId)
 
     if (!foundAnswer)
       return left(new ResourceNotFoundError('Answer was not found'))
@@ -45,7 +45,7 @@ export class EditAnswerUseCase {
       return left(new NotAllowedError('Answer is not from this author'))
 
     const currentAnswerAttachments =
-      await this.answerAttachmentRepository.findManyByAnswerId(answerId)
+      await this.answerAttachmentsRepository.findManyByAnswerId(answerId)
 
     const answerAttachmentList = new AnswerAttachmentList(
       currentAnswerAttachments,
@@ -62,7 +62,7 @@ export class EditAnswerUseCase {
     foundAnswer.content = newContent
     foundAnswer.attachments = answerAttachmentList
 
-    await this.answerRepository.save(foundAnswer)
+    await this.answersRepository.save(foundAnswer)
 
     return right({ answer: foundAnswer })
   }

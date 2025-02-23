@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either'
 
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 
 import { PaginationError } from './errors/pagination-error'
@@ -18,7 +18,7 @@ type FetchRecentQuestionsUseCaseResponse = Either<
 >
 
 export class FetchRecentQuestionsUseCase {
-  constructor(private readonly questionRepository: QuestionRepository) {}
+  constructor(private readonly questionsRepository: QuestionsRepository) {}
   private readonly MAX_PAGE_SIZE = 30
 
   public async execute({
@@ -31,7 +31,7 @@ export class FetchRecentQuestionsUseCase {
           `Page size not allowed! Max page size is ${this.MAX_PAGE_SIZE}`,
         ),
       )
-    const foundQuestions = await this.questionRepository.findManyRecent({
+    const foundQuestions = await this.questionsRepository.findManyRecent({
       page,
       pageSize: pageSize ?? this.MAX_PAGE_SIZE,
     })

@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
-import { AnswerRepository } from '@/domain/forum/application/repositories/answer-repository'
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
 
 interface AnswerQuestionUseCaseRequest {
   authorId: string
@@ -13,7 +13,7 @@ interface AnswerQuestionUseCaseRequest {
 type AnswerQuestionUseCaseResponse = Either<null, { answer: Answer }>
 
 export class AnswerQuestionUseCase {
-  constructor(private readonly answerRepository: AnswerRepository) {}
+  constructor(private readonly answersRepository: AnswersRepository) {}
   async execute({
     content,
     authorId,
@@ -27,7 +27,7 @@ export class AnswerQuestionUseCase {
       updatedAt: new Date(),
     })
 
-    await this.answerRepository.create(answer)
+    await this.answersRepository.create(answer)
 
     return right({ answer })
   }

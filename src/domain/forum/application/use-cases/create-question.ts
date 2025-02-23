@@ -2,7 +2,7 @@ import { Either, right } from '@/core/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Question } from '@/domain/forum/enterprise/entities/question'
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import { QuestionAttachment } from '@/domain/forum/enterprise/entities/question-attachment'
 import { QuestionAttachmentList } from '@/domain/forum/enterprise/entities/question-attachment-list'
 
@@ -21,7 +21,7 @@ type CreateQuestionUseCaseResponse = Either<
 >
 
 export class CreateQuestionUseCase {
-  constructor(private readonly questionRepository: QuestionRepository) {}
+  constructor(private readonly questionsRepository: QuestionsRepository) {}
   async execute({
     title,
     content,
@@ -45,7 +45,7 @@ export class CreateQuestionUseCase {
 
     question.attachments = new QuestionAttachmentList(questionAttachments)
 
-    await this.questionRepository.create(question)
+    await this.questionsRepository.create(question)
 
     return right({ question })
   }

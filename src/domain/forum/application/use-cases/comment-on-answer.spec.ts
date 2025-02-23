@@ -1,21 +1,21 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer'
-import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
-import { InMemoryAnswerCommentRepository } from '@/test/repositories/in-memory-answer-comment-repository'
+import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers-repository'
+import { InMemoryAnswerCommentsRepository } from '@/test/repositories/in-memory-answer-comments-repository'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 describe('CommentOnAnswer unit tests', () => {
   let commentOnAnswerUseCase: CommentOnAnswerUseCase
-  let inMemoryAnswerRepository: InMemoryAnswerRepository
-  let inMemoryAnswerCommentRepository: InMemoryAnswerCommentRepository
+  let inMemoryAnswersRepository: InMemoryAnswersRepository
+  let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 
   beforeEach(() => {
-    inMemoryAnswerRepository = new InMemoryAnswerRepository()
-    inMemoryAnswerCommentRepository = new InMemoryAnswerCommentRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
     commentOnAnswerUseCase = new CommentOnAnswerUseCase(
-      inMemoryAnswerRepository,
-      inMemoryAnswerCommentRepository,
+      inMemoryAnswersRepository,
+      inMemoryAnswerCommentsRepository,
     )
   })
 
@@ -32,7 +32,7 @@ describe('CommentOnAnswer unit tests', () => {
 
   it('should be able to create answerComment when a valid answerId is given', async () => {
     const createdAnswer = makeAnswer()
-    await inMemoryAnswerRepository.create(createdAnswer)
+    await inMemoryAnswersRepository.create(createdAnswer)
 
     const result = await commentOnAnswerUseCase.execute({
       authorId: 'any-author-id',
@@ -42,7 +42,7 @@ describe('CommentOnAnswer unit tests', () => {
 
     expect(result.isRight()).toBe(true)
     expect(result.value).toEqual({
-      answerComment: inMemoryAnswerCommentRepository.answerComments[0],
+      answerComment: inMemoryAnswerCommentsRepository.answerComments[0],
     })
   })
 })

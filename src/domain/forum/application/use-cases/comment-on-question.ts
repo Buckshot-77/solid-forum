@@ -1,9 +1,9 @@
 import { Either, left, right } from '@/core/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import { QuestionComment } from '@/domain/forum/enterprise/entities/question-comment'
-import { QuestionCommentRepository } from '@/domain/forum/application/repositories/question-comment-repository'
+import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository'
 
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
@@ -22,15 +22,15 @@ type CommentOnQuestionUseCaseResponse = Either<
 
 export class CommentOnQuestionUseCase {
   constructor(
-    private readonly questionRepository: QuestionRepository,
-    private readonly questionCommentRepository: QuestionCommentRepository,
+    private readonly questionsRepository: QuestionsRepository,
+    private readonly questionCommentsRepository: QuestionCommentsRepository,
   ) {}
   async execute({
     authorId,
     content,
     questionId,
   }: CommentOnQuestionUseCaseRequest): Promise<CommentOnQuestionUseCaseResponse> {
-    const foundQuestion = await this.questionRepository.findById(
+    const foundQuestion = await this.questionsRepository.findById(
       questionId.toString(),
     )
     if (!foundQuestion)
@@ -44,7 +44,7 @@ export class CommentOnQuestionUseCase {
       updatedAt: new Date(),
     })
 
-    await this.questionCommentRepository.create(questionComment)
+    await this.questionCommentsRepository.create(questionComment)
 
     return right({ questionComment })
   }

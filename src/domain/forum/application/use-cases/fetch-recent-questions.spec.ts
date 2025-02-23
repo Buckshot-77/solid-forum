@@ -2,24 +2,24 @@ import { expect, describe, it, beforeEach } from 'vitest'
 
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions'
 
-import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
+import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
 import { makeQuestion } from '@/test/factories/make-question'
 import { PaginationError } from './errors/pagination-error'
 
 describe('FetchRecentQuestions unit tests', () => {
   let fetchRecentQuestionsUseCase: FetchRecentQuestionsUseCase
-  let inMemoryQuestionRepository: InMemoryQuestionRepository
+  let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
     fetchRecentQuestionsUseCase = new FetchRecentQuestionsUseCase(
-      inMemoryQuestionRepository,
+      inMemoryQuestionsRepository,
     )
   })
 
   it('should return PaginationError if pageSize exceeds max page size allowed', async () => {
     const createdQuestion = makeQuestion()
-    await inMemoryQuestionRepository.create(createdQuestion)
+    await inMemoryQuestionsRepository.create(createdQuestion)
 
     const result = await fetchRecentQuestionsUseCase.execute({
       page: 1,
@@ -43,9 +43,9 @@ describe('FetchRecentQuestions unit tests', () => {
       createdAt: new Date('2022-01-01'),
     })
 
-    await inMemoryQuestionRepository.create(firstQuestion)
-    await inMemoryQuestionRepository.create(secondQuestion)
-    await inMemoryQuestionRepository.create(thirdQuestion)
+    await inMemoryQuestionsRepository.create(firstQuestion)
+    await inMemoryQuestionsRepository.create(secondQuestion)
+    await inMemoryQuestionsRepository.create(thirdQuestion)
 
     const result = await fetchRecentQuestionsUseCase.execute({
       page: 1,
@@ -63,7 +63,7 @@ describe('FetchRecentQuestions unit tests', () => {
   it('should return the first 30 results if no pageSize is given', async () => {
     for (let i = 0; i < 50; i++) {
       const createdQuestion = makeQuestion()
-      await inMemoryQuestionRepository.create(createdQuestion)
+      await inMemoryQuestionsRepository.create(createdQuestion)
     }
 
     const result = await fetchRecentQuestionsUseCase.execute({
@@ -78,7 +78,7 @@ describe('FetchRecentQuestions unit tests', () => {
   it('should return 20 results for 50 questions created and page 2 requested, for page size 30', async () => {
     for (let i = 0; i < 50; i++) {
       const createdQuestion = makeQuestion()
-      await inMemoryQuestionRepository.create(createdQuestion)
+      await inMemoryQuestionsRepository.create(createdQuestion)
     }
 
     const result = await fetchRecentQuestionsUseCase.execute({ page: 2 })

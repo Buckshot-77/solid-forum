@@ -1,6 +1,7 @@
 import { Question } from '@/domain/forum/enterprise/entities/question'
 import { PaginationParams } from '@/core/repository/pagination-params'
-export interface QuestionRepository {
+
+export interface QuestionsRepository {
   create(question: Question): Promise<void>
   save(question: Question): Promise<void>
   deleteById(id: string): Promise<void>

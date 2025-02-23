@@ -2,25 +2,25 @@ import { expect, describe, it, beforeEach } from 'vitest'
 
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers'
 
-import { InMemoryAnswerRepository } from '@/test/repositories/in-memory-answer-repository'
+import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers-repository'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { PaginationError } from './errors/pagination-error'
 
 describe('FetchQuestionAnswers unit tests', () => {
   let fetchQuestionAnswersUseCase: FetchQuestionAnswersUseCase
-  let inMemoryAnswerRepository: InMemoryAnswerRepository
+  let inMemoryAnswersRepository: InMemoryAnswersRepository
 
   beforeEach(() => {
-    inMemoryAnswerRepository = new InMemoryAnswerRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository()
     fetchQuestionAnswersUseCase = new FetchQuestionAnswersUseCase(
-      inMemoryAnswerRepository,
+      inMemoryAnswersRepository,
     )
   })
 
   it('should return PaginationError if pageSize exceeds max page size allowed', async () => {
     const createdAnswer = makeAnswer()
-    await inMemoryAnswerRepository.create(createdAnswer)
+    await inMemoryAnswersRepository.create(createdAnswer)
 
     const result = await fetchQuestionAnswersUseCase.execute({
       page: 1,
@@ -38,7 +38,7 @@ describe('FetchQuestionAnswers unit tests', () => {
       const createdAnswer = makeAnswer({
         questionId: new UniqueIdentifier('any-question-id'),
       })
-      await inMemoryAnswerRepository.create(createdAnswer)
+      await inMemoryAnswersRepository.create(createdAnswer)
     }
 
     const result = await fetchQuestionAnswersUseCase.execute({
@@ -56,14 +56,14 @@ describe('FetchQuestionAnswers unit tests', () => {
       const createdAnswer = makeAnswer({
         questionId: new UniqueIdentifier('any-question-id'),
       })
-      await inMemoryAnswerRepository.create(createdAnswer)
+      await inMemoryAnswersRepository.create(createdAnswer)
     }
 
     for (let i = 0; i < 10; i++) {
       const createdAnswer = makeAnswer({
         questionId: new UniqueIdentifier('other-question-id'),
       })
-      await inMemoryAnswerRepository.create(createdAnswer)
+      await inMemoryAnswersRepository.create(createdAnswer)
     }
 
     const result = await fetchQuestionAnswersUseCase.execute({
@@ -90,9 +90,9 @@ describe('FetchQuestionAnswers unit tests', () => {
       questionId: new UniqueIdentifier('any-question-id'),
     })
 
-    await inMemoryAnswerRepository.create(firstAnswer)
-    await inMemoryAnswerRepository.create(secondAnswer)
-    await inMemoryAnswerRepository.create(thirdAnswer)
+    await inMemoryAnswersRepository.create(firstAnswer)
+    await inMemoryAnswersRepository.create(secondAnswer)
+    await inMemoryAnswersRepository.create(thirdAnswer)
 
     const result = await fetchQuestionAnswersUseCase.execute({
       page: 1,
@@ -113,7 +113,7 @@ describe('FetchQuestionAnswers unit tests', () => {
       const createdAnswer = makeAnswer({
         questionId: new UniqueIdentifier('any-question-id'),
       })
-      await inMemoryAnswerRepository.create(createdAnswer)
+      await inMemoryAnswersRepository.create(createdAnswer)
     }
 
     const result = await fetchQuestionAnswersUseCase.execute({

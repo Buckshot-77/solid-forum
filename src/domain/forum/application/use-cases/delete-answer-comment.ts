@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either'
 
-import { AnswerCommentRepository } from '@/domain/forum/application/repositories/answer-comment-repository'
+import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository'
 
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
@@ -17,14 +17,14 @@ type DeleteAnswerCommentUseCaseResponse = Either<
 
 export class DeleteAnswerCommentUseCase {
   constructor(
-    private readonly answerCommentRepository: AnswerCommentRepository,
+    private readonly answerCommentsRepository: AnswerCommentsRepository,
   ) {}
   async execute({
     answerCommentId,
     authorId,
   }: DeleteAnswerCommentUseCaseRequest): Promise<DeleteAnswerCommentUseCaseResponse> {
     const foundAnswerComment =
-      await this.answerCommentRepository.findById(answerCommentId)
+      await this.answerCommentsRepository.findById(answerCommentId)
 
     if (!foundAnswerComment)
       return left(
@@ -36,7 +36,7 @@ export class DeleteAnswerCommentUseCase {
         new NotAllowedError('User not allowed to delete this comment'),
       )
 
-    await this.answerCommentRepository.deleteById(answerCommentId)
+    await this.answerCommentsRepository.deleteById(answerCommentId)
 
     return right({})
   }

@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either'
 
-import { AnswerCommentRepository } from '@/domain/forum/application/repositories/answer-comment-repository'
+import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository'
 import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comment'
 import { PaginationError } from './errors/pagination-error'
 
@@ -19,7 +19,7 @@ type FetchAnswerCommentsUseCaseResponse = Either<
 
 export class FetchAnswerCommentsUseCase {
   constructor(
-    private readonly answerCommentRepository: AnswerCommentRepository,
+    private readonly answerCommentsRepository: AnswerCommentsRepository,
   ) {}
   private readonly MAX_PAGE_SIZE = 30
 
@@ -35,7 +35,7 @@ export class FetchAnswerCommentsUseCase {
         ),
       )
     const foundAnswerComments =
-      await this.answerCommentRepository.findManyByAnswerId(answerId, {
+      await this.answerCommentsRepository.findManyByAnswerId(answerId, {
         page,
         pageSize: pageSize ?? this.MAX_PAGE_SIZE,
       })

@@ -1,8 +1,8 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question'
 
-import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
-import { InMemoryQuestionAttachmentRepository } from '@/test/repositories/in-memory-question-attachment-repository'
+import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
+import { InMemoryQuestionAttachmentsRepository } from '@/test/repositories/in-memory-question-attachments-repository'
 
 import { makeQuestion } from '@/test/factories/make-question'
 
@@ -13,26 +13,26 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 
 describe('EditQuestion unit tests', () => {
   let editQuestionUseCase: EditQuestionUseCase
-  let inMemoryQuestionRepository: InMemoryQuestionRepository
-  let inMemoryQuestionAttachmentRepository: InMemoryQuestionAttachmentRepository
+  let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+  let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionAttachmentRepository =
-      new InMemoryQuestionAttachmentRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
 
-    inMemoryQuestionRepository = new InMemoryQuestionRepository(
-      inMemoryQuestionAttachmentRepository,
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
     )
 
     editQuestionUseCase = new EditQuestionUseCase(
-      inMemoryQuestionRepository,
-      inMemoryQuestionAttachmentRepository,
+      inMemoryQuestionsRepository,
+      inMemoryQuestionAttachmentsRepository,
     )
   })
 
   it('should return ResourceNotFound if question does not exist', async () => {
     const createdQuestion = makeQuestion()
-    await inMemoryQuestionRepository.create(createdQuestion)
+    await inMemoryQuestionsRepository.create(createdQuestion)
 
     const result = await editQuestionUseCase.execute({
       authorId: createdQuestion.authorId,
@@ -50,7 +50,7 @@ describe('EditQuestion unit tests', () => {
 
   it('should return NotAllowedError if author id is not the same as the question author id', async () => {
     const createdQuestion = makeQuestion()
-    await inMemoryQuestionRepository.create(createdQuestion)
+    await inMemoryQuestionsRepository.create(createdQuestion)
 
     const result = await editQuestionUseCase.execute({
       authorId: 'another-author-id',
@@ -68,9 +68,9 @@ describe('EditQuestion unit tests', () => {
 
   it('should be able to edit a question', async () => {
     const createdQuestion = makeQuestion()
-    await inMemoryQuestionRepository.create(createdQuestion)
+    await inMemoryQuestionsRepository.create(createdQuestion)
 
-    inMemoryQuestionAttachmentRepository.questionAttachments.push(
+    inMemoryQuestionAttachmentsRepository.questionAttachments.push(
       makeQuestionAttachment({
         questionId: new UniqueIdentifier(createdQuestion.id),
         attachmentId: new UniqueIdentifier('1'),
@@ -97,7 +97,7 @@ describe('EditQuestion unit tests', () => {
       }),
     })
     expect(
-      inMemoryQuestionRepository.questions[0].attachments.currentItems,
+      inMemoryQuestionsRepository.questions[0].attachments.currentItems,
     ).toEqual([
       expect.objectContaining({
         _props: expect.objectContaining({

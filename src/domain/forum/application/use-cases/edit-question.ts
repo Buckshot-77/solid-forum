@@ -2,14 +2,14 @@ import { Either, left, right } from '@/core/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 
-import { QuestionRepository } from '@/domain/forum/application/repositories/question-repository'
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 import { QuestionAttachment } from '@/domain/forum/enterprise/entities/question-attachment'
 import { QuestionAttachmentList } from '@/domain/forum/enterprise/entities/question-attachment-list'
 
 import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
-import { QuestionAttachmentRepository } from '../repositories/question-attachment-repository'
+import { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository'
 
 export interface EditQuestionRequest {
   questionId: string
@@ -28,8 +28,8 @@ type EditQuestionResponse = Either<
 
 export class EditQuestionUseCase {
   constructor(
-    private readonly questionRepository: QuestionRepository,
-    private readonly questionAttachmentRepository: QuestionAttachmentRepository,
+    private readonly questionsRepository: QuestionsRepository,
+    private readonly questionAttachmentsRepository: QuestionAttachmentsRepository,
   ) {}
 
   public async execute({
@@ -39,7 +39,7 @@ export class EditQuestionUseCase {
     title,
     attachmentIds,
   }: EditQuestionRequest): Promise<EditQuestionResponse> {
-    const foundQuestion = await this.questionRepository.findById(questionId)
+    const foundQuestion = await this.questionsRepository.findById(questionId)
 
     if (!foundQuestion)
       return left(new ResourceNotFoundError('Question was not found'))
@@ -47,7 +47,7 @@ export class EditQuestionUseCase {
       return left(new NotAllowedError('Question is not from this author'))
 
     const currentQuestionAttachments =
-      await this.questionAttachmentRepository.findManyByQuestionId(questionId)
+      await this.questionAttachmentsRepository.findManyByQuestionId(questionId)
 
     const questionAttachmentList = new QuestionAttachmentList(
       currentQuestionAttachments,
@@ -65,7 +65,7 @@ export class EditQuestionUseCase {
     foundQuestion.content = newContent
     foundQuestion.attachments = questionAttachmentList
 
-    await this.questionRepository.save(foundQuestion)
+    await this.questionsRepository.save(foundQuestion)
 
     return right({ question: foundQuestion })
   }

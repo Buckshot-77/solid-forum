@@ -3,18 +3,18 @@ import { expect, describe, it, beforeEach, vi } from 'vitest'
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug'
 import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
 
-import { InMemoryQuestionRepository } from '@/test/repositories/in-memory-question-repository'
+import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
 import { makeQuestion } from '@/test/factories/make-question'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 describe('GetQuestionBySlug unit tests', () => {
   let getQuestionBySlugUseCase: GetQuestionBySlugUseCase
-  let inMemoryQuestionRepository: InMemoryQuestionRepository
+  let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
     getQuestionBySlugUseCase = new GetQuestionBySlugUseCase(
-      inMemoryQuestionRepository,
+      inMemoryQuestionsRepository,
     )
   })
 
@@ -30,12 +30,12 @@ describe('GetQuestionBySlug unit tests', () => {
   })
 
   it('should be able to get question by slug and call find by slug with the given slug', async () => {
-    const getBySlugSpy = vi.spyOn(inMemoryQuestionRepository, 'findBySlug')
+    const getBySlugSpy = vi.spyOn(inMemoryQuestionsRepository, 'findBySlug')
     const createdQuestion = makeQuestion({
       slug: Slug.createWithoutTreatments('any-slug-text'),
     })
 
-    await inMemoryQuestionRepository.create(createdQuestion)
+    await inMemoryQuestionsRepository.create(createdQuestion)
 
     const result = await getQuestionBySlugUseCase.execute({
       slug_text: 'any-slug-text',
