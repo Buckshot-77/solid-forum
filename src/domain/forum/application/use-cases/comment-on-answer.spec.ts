@@ -4,14 +4,20 @@ import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers
 import { InMemoryAnswerCommentsRepository } from '@/test/repositories/in-memory-answer-comments-repository'
 import { makeAnswer } from '@/test/factories/make-answer'
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repositories/in-memory-answer-attachments-repository'
 
 describe('CommentOnAnswer unit tests', () => {
   let commentOnAnswerUseCase: CommentOnAnswerUseCase
   let inMemoryAnswersRepository: InMemoryAnswersRepository
   let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
+  let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
     inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
     commentOnAnswerUseCase = new CommentOnAnswerUseCase(
       inMemoryAnswersRepository,

@@ -9,16 +9,28 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 
 import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repositories/in-memory-answer-attachments-repository'
+import { InMemoryQuestionAttachmentsRepository } from '@/test/repositories/in-memory-question-attachments-repository'
 
 let answersRepository: InMemoryAnswersRepository
 let questionsRepository: InMemoryQuestionsRepository
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 
 let chooseBestAnswerUseCase: ChooseBestAnswerUseCase
 
 describe('Choose Best Answer unit tests', () => {
   beforeEach(() => {
-    answersRepository = new InMemoryAnswersRepository()
-    questionsRepository = new InMemoryQuestionsRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    answersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
+    questionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     chooseBestAnswerUseCase = new ChooseBestAnswerUseCase(
       answersRepository,
       questionsRepository,

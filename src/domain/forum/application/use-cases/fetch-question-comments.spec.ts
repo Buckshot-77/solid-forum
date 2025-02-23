@@ -12,7 +12,8 @@ describe('FetchQuestionComments unit tests', () => {
   let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
+    inMemoryQuestionCommentsRepository =
+      new InMemoryQuestionCommentsRepository()
     fetchQuestionCommentsUseCase = new FetchQuestionCommentsUseCase(
       inMemoryQuestionCommentsRepository,
     )

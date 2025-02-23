@@ -6,13 +6,19 @@ import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers
 import { makeAnswer } from '@/test/factories/make-answer'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { PaginationError } from './errors/pagination-error'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repositories/in-memory-answer-attachments-repository'
 
 describe('FetchQuestionAnswers unit tests', () => {
   let fetchQuestionAnswersUseCase: FetchQuestionAnswersUseCase
   let inMemoryAnswersRepository: InMemoryAnswersRepository
+  let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
     fetchQuestionAnswersUseCase = new FetchQuestionAnswersUseCase(
       inMemoryAnswersRepository,
     )

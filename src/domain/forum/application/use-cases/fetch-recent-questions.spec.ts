@@ -5,13 +5,19 @@ import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-case
 import { InMemoryQuestionsRepository } from '@/test/repositories/in-memory-questions-repository'
 import { makeQuestion } from '@/test/factories/make-question'
 import { PaginationError } from './errors/pagination-error'
+import { InMemoryQuestionAttachmentsRepository } from '@/test/repositories/in-memory-question-attachments-repository'
 
 describe('FetchRecentQuestions unit tests', () => {
   let fetchRecentQuestionsUseCase: FetchRecentQuestionsUseCase
   let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+  let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     fetchRecentQuestionsUseCase = new FetchRecentQuestionsUseCase(
       inMemoryQuestionsRepository,
     )

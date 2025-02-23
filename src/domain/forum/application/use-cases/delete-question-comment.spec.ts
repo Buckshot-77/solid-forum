@@ -11,7 +11,8 @@ describe('DeleteQuestionComment unit tests', () => {
   let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 
   beforeEach(() => {
-    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
+    inMemoryQuestionCommentsRepository =
+      new InMemoryQuestionCommentsRepository()
     deleteQuestionCommentUseCase = new DeleteQuestionCommentUseCase(
       inMemoryQuestionCommentsRepository,
     )

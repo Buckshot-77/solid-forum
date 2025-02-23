@@ -1,13 +1,19 @@
 import { expect, describe, it, beforeEach } from 'vitest'
 import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question'
 import { InMemoryAnswersRepository } from '@/test/repositories/in-memory-answers-repository'
+import { InMemoryAnswerAttachmentsRepository } from '@/test/repositories/in-memory-answer-attachments-repository'
 
 describe('AnswerQuestion unit tests', () => {
   let answerQuestionUseCase: AnswerQuestionUseCase
   let inMemoryAnswersRepository: InMemoryAnswersRepository
+  let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository()
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository,
+    )
     answerQuestionUseCase = new AnswerQuestionUseCase(inMemoryAnswersRepository)
   })
 
