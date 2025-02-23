@@ -2,7 +2,7 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Optional } from '@/core/types/optional'
 
-interface NotificationProps {
+export interface NotificationProps {
   recipientId: UniqueIdentifier
   title: string
   content: string
