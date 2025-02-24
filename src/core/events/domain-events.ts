@@ -36,7 +36,7 @@ export class DomainEvents {
   ): AggregateRoot<any> | undefined {
     return this.markedAggregates.find((aggregate) => {
       const idToCompare = new UniqueIdentifier(aggregate.id)
-      idToCompare.equals(id)
+      return idToCompare.equals(id)
     })
   }
 
