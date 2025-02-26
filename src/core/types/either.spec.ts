@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 
 function doSomething(shouldSuccess: boolean): Either<string, number> {
   if (shouldSuccess) {

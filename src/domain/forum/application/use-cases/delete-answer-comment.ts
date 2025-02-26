@@ -1,4 +1,4 @@
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 
 import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository'
 

@@ -1,4 +1,4 @@
-import { Either, left, right } from '@/core/either'
+import { Either, left, right } from '@/core/types/either'
 
 import { Notification } from '@/domain/notification/enterprise/entities/notification'
 import { NotificationsRepository } from '@/domain/notification/application/repositories/notifications-repository'

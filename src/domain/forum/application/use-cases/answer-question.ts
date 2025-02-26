@@ -1,4 +1,4 @@
-import { Either, right } from '@/core/either'
+import { Either, right } from '@/core/types/either'
 
 import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
