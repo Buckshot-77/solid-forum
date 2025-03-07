@@ -1,7 +1,10 @@
-import { PaginationParams } from '@/core/repository/pagination-params'
 import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository'
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
 import { Answer } from '@/domain/forum/enterprise/entities/answer'
+
+import { DomainEvents } from '@/core/events/domain-events'
+import { PaginationParams } from '@/core/repository/pagination-params'
+import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
 
 export class InMemoryAnswersRepository implements AnswersRepository {
   public answers: Answer[] = []
@@ -12,6 +15,7 @@ export class InMemoryAnswersRepository implements AnswersRepository {
 
   public async create(answer: Answer): Promise<void> {
     this.answers.push(answer)
+    DomainEvents.dispatchEventsForAggregate(new UniqueIdentifier(answer.id))
   }
 
   public async findManyByQuestionId(
@@ -44,6 +48,7 @@ export class InMemoryAnswersRepository implements AnswersRepository {
     )
 
     this.answers[foundAnswerIndex] = answer
+    DomainEvents.dispatchEventsForAggregate(new UniqueIdentifier(answer.id))
   }
 
   public async deleteById(id: string): Promise<void> {
