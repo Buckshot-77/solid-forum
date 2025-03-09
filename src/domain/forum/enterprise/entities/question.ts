@@ -3,6 +3,7 @@ import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifie
 import { Optional } from '@/core/types/optional'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 import { QuestionAttachmentList } from '@/domain/forum/enterprise/entities/question-attachment-list'
+import { QuestionBestAnswerChosenEvent } from '../events/question-best-answer-chosen'
 
 export interface QuestionProps {
   title: string
@@ -75,6 +76,9 @@ export class Question extends AggregateRoot<QuestionProps> {
   }
 
   set bestAnswerId(id: UniqueIdentifier | undefined) {
+    if (id && this._props.bestAnswerId !== id) {
+      this.addDomainEvent(new QuestionBestAnswerChosenEvent(this, id))
+    }
     this._props.bestAnswerId = id
   }
 
