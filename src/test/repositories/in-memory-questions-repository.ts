@@ -1,3 +1,5 @@
+import { UniqueIdentifier } from '@/core/entities/value-objects/unique-identifier'
+import { DomainEvents } from '@/core/events/domain-events'
 import { PaginationParams } from '@/core/repository/pagination-params'
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository'
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository'
@@ -31,6 +33,8 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
 
   public async create(question: Question): Promise<void> {
     this.questions.push(question)
+
+    DomainEvents.dispatchEventsForAggregate(new UniqueIdentifier(question.id))
   }
 
   public async deleteById(id: string): Promise<void> {
@@ -59,5 +63,7 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
     )
 
     this.questions[foundQuestionIndex] = question
+
+    DomainEvents.dispatchEventsForAggregate(new UniqueIdentifier(question.id))
   }
 }
